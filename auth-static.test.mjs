@@ -58,3 +58,16 @@ test('accent tokens are defined and history CTA links to sign-in', () => {
   assert.match(styles, /--gold-bright\s*:/);
   assert.match(html, /href="#access"/);
 });
+
+test('cinematic motion layer includes pointer response, scroll progress and reduced-motion support', () => {
+  const html = read('./index.html');
+  const motion = read('./motion.js');
+  const styles = read('./styles.css');
+  assert.match(html, /src="motion.js"/);
+  assert.match(motion, /pointermove/);
+  assert.match(motion, /IntersectionObserver/);
+  assert.match(motion, /scrollIntoView/);
+  assert.match(styles, /@keyframes map-trace/);
+  assert.match(styles, /\.scroll-progress/);
+  assert.match(styles, /prefers-reduced-motion/);
+});
