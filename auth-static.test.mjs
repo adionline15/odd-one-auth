@@ -1,17 +1,26 @@
-
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const read = (path) =>
-  fs.readFileSync(new URL(path, import.meta.url), 'utf8');
+const read = (path) => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('auth UI exposes login/signup and accessible status', () => {
+test('history-led auth page keeps login, signup and accessible status controls', () => {
   const html = read('./index.html');
   assert.match(html, /id="login-tab"/);
   assert.match(html, /id="signup-tab"/);
   assert.match(html, /aria-live="polite"/);
   assert.match(html, /id="confirm"/);
+  assert.match(html, /id="access"/);
+});
+
+test('immersive India history sections are present before map access', () => {
+  const html = read('./index.html');
+  assert.match(html, /AN IMMERSIVE JOURNEY THROUGH INDIA/);
+  assert.match(html, /id="chapters"/);
+  assert.match(html, /THE FIRST CITIES/);
+  assert.match(html, /IDEAS &amp; EMPIRES|IDEAS & EMPIRES/);
+  assert.match(html, /THE ROAD TO FREEDOM/);
+  assert.match(html, /id="about"/);
 });
 
 test('Supabase email, Google and reset flows are wired', () => {
@@ -30,8 +39,9 @@ test('frontend config uses placeholders and no secret key', () => {
 
 test('responsive and reduced motion styles exist', () => {
   const styles = read('./styles.css');
-  assert.match(styles, /max-width:760px/);
+  assert.match(styles, /max-width:620px/);
   assert.match(styles, /prefers-reduced-motion:reduce/);
+  assert.match(styles, /\.era-grid/);
 });
 
 test('signup confirmation password has an accessible visibility toggle', () => {
@@ -42,8 +52,9 @@ test('signup confirmation password has an accessible visibility toggle', () => {
   assert.match(auth, /bindPasswordToggle\(confirm,\$\("toggle-confirm"\),"confirmation password"\)/);
 });
 
-test('accent hover token is defined when referenced', () => {
+test('accent tokens are defined and history CTA links to sign-in', () => {
   const styles = read('./styles.css');
-  assert.match(styles, /--lime-bright\s*:/);
-  assert.match(styles, /color:\s*var\(--lime-bright\)/);
+  const html = read('./index.html');
+  assert.match(styles, /--gold-bright\s*:/);
+  assert.match(html, /href="#access"/);
 });
