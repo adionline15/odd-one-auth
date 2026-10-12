@@ -260,7 +260,7 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
   .world-globe {
     left: -5.5%;
     top: 51%;
-    width: min(78vw, 1180px);
+    width: min(60vw, 900px);
     opacity: 1;
     z-index: 0;
     filter: drop-shadow(0 0 52px #2563eb30);
@@ -313,11 +313,11 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
   }
 }
 @media (min-width: 1400px) {
-  .world-globe { left: -4%; width: min(76vw, 1320px); }
+  .world-globe { left: -1%; width: min(60vw, 1050px); }
 }
 @media (max-width: 920px) {
   .world-globe {
-    width: min(112vw, 760px);
+    width: min(94vw, 650px);
     left: 50%;
     top: 31%;
     opacity: 1;
@@ -327,6 +327,6 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
   }
 }
 @media (max-width: 620px) {
-  .world-globe { width: 125vw; top: 27%; opacity: .78; }
+  .world-globe { width: 104vw; top: 27%; opacity: .72; }
   .hero-copy h1 { text-shadow: 0 3px 24px #05070b; }
 }
