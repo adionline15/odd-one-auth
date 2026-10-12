@@ -33,3 +33,11 @@ test('responsive and reduced motion styles exist', () => {
   assert.match(styles, /max-width:760px/);
   assert.match(styles, /prefers-reduced-motion:reduce/);
 });
+
+test('signup confirmation password has an accessible visibility toggle', () => {
+  const html = read('./index.html');
+  const auth = read('./auth.js');
+  assert.match(html, /id="toggle-confirm"/);
+  assert.match(html, /aria-label="Show confirmation password"/);
+  assert.match(auth, /bindPasswordToggle\(confirm,\$\("toggle-confirm"\),"confirmation password"\)/);
+});
