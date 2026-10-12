@@ -204,3 +204,19 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
 @media(max-width:920px){.world-globe{width:min(105vw,640px);left:50%;top:32%;transform:translate(-50%,-50%);opacity:.38}.world-globe-grid{opacity:.8}}
 @media(max-width:620px){.world-globe{top:28%;width:118vw;opacity:.32}}
 @media(prefers-reduced-motion:reduce){.world-globe{animation:none}}
+
+
+/* Hero layout v2: a large Earth on the left, access panel on the right */
+@media (min-width: 921px) {
+  .hero { display:grid; grid-template-columns:minmax(0,1fr) minmax(340px,410px); gap:3vw; padding:118px 6vw 82px; align-items:center; }
+  .hero-copy { grid-column:1; grid-row:1; align-self:center; max-width:470px; z-index:2; padding-top:0; }
+  .auth-panel { grid-column:2; grid-row:1; justify-self:end; width:100%; max-width:410px; z-index:4; }
+  .monument-scene { display:none!important; }
+  .world-globe { left:4%; top:52%; width:min(66vw,900px); opacity:.92; z-index:0; }
+  .hero:after { background:linear-gradient(90deg,#05070b00 0%,#05070b00 40%,#05070b70 69%,#05070b 100%),linear-gradient(0deg,#05070b 0%,transparent 18%,transparent 82%,#05070b65 100%); }
+}
+.world-globe { background:radial-gradient(circle at 32% 27%,#3478b9 0%,#174879 25%,#0a2444 56%,#030711 78%); box-shadow:inset -60px -16px 100px #01030af2,inset 14px 12px 42px #a8d8ff30,0 0 110px #1d4ed83b; }
+.world-globe-land { position:absolute;inset:0;border-radius:50%;opacity:.8;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cg fill='%237bbd8b' stroke='%23a1d5a8' stroke-opacity='.38' stroke-width='2'%3E%3Cpath d='M67 150l28-25 36 4 19-18 39 8 17 24-15 17-5 24-22 11-9 31-26 12-17-23-27-6-15-26-20-8zM157 231l27-10 30 17 17 30-7 35-22 31-9 35-20 37-17-9-4-35-14-25 4-33-13-30zM248 114l30-20 35 8 20 20 37-7 27 18 34 4 23 23-12 22-28 6-17 26-29 4-8 25-21 13-17-13-20 11-22-21-29-7-17-24-21-9 5-25-17-18zM300 247l32-15 31 14 17 25-8 26 15 23-8 29-22 23-7 38-22 21-15-26-4-34-18-18 1-29-17-22zM407 310l28-11 32 15 17 31-16 21-25-4-19-17zM478 187l27-7 22 18-6 22-29 5-17-14z'/%3E%3Cpath d='M112 92l22-11 15 8-7 17-18 8zM370 433l22-8 18 18-14 20-17-7z'/%3E%3C/g%3E%3C/svg%3E");background-size:100% 100%;filter:drop-shadow(0 0 7px #7bbd8b20);mask-image:radial-gradient(circle at 42% 42%,#000 35%,#0009 62%,transparent 75%);}
+.world-globe-grid { position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(0deg,transparent 0 9.7%,#a8d8ff18 10% 10.15%,transparent 10.4% 19.5%),repeating-linear-gradient(90deg,transparent 0 9.7%,#a8d8ff17 10% 10.15%,transparent 10.4% 19.5%);mask-image:radial-gradient(circle,#000 57%,transparent 72%); }
+.world-globe-shine { background:linear-gradient(112deg,transparent 15%,#a7d7ff1c 35%,transparent 57%),linear-gradient(90deg,transparent 45%,#01030ab0 100%); }
+@media(max-width:920px){.world-globe-land{opacity:.7}.world-globe-grid{opacity:.45}}
