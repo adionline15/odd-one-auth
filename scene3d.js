@@ -147,6 +147,7 @@
 
         let raf = 0;
         let disposed = false;
+        let scrollRotation = 0;
         const clock = new THREE.Clock();
         const resize = () => {
           if (disposed) return;
@@ -162,11 +163,15 @@
           if (disposed || document.hidden) return;
           raf = requestAnimationFrame(render);
           const t = clock.getElapsedTime();
+          const scrollProgress = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--earth-scroll')) || 0;
+          const indiaTurn = scrollProgress * 1.22;
+          scrollRotation += (indiaTurn - scrollRotation) * 0.035;
           pointer.x += (pointer.tx - pointer.x) * 0.035;
           pointer.y += (pointer.ty - pointer.y) * 0.035;
           if (!pointer.down) earth.rotation.y += 0.0018;
           earth.rotation.x += (pointer.y * 0.2 - earth.rotation.x) * 0.018;
           earth.rotation.y += pointer.x * 0.004;
+          earthGroup.rotation.y += (scrollRotation - earthGroup.rotation.y) * 0.08;
           const clouds = earthGroup.userData.clouds;
           if (clouds) {
             clouds.rotation.y = earth.rotation.y + t * 0.0008;
