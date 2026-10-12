@@ -330,3 +330,20 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
   .world-globe { width: 104vw; top: 27%; opacity: .72; }
   .hero-copy h1 { text-shadow: 0 3px 24px #05070b; }
 }
+
+
+/* Keep the Earth clear of the wordmark and header area */
+@media (min-width: 921px) {
+  .world-globe {
+    top: 61%;
+    left: 0%;
+    width: min(56vw, 820px);
+  }
+}
+@media (min-width: 1400px) {
+  .world-globe {
+    top: 60%;
+    left: 1%;
+    width: min(54vw, 940px);
+  }
+}
