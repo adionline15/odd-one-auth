@@ -116,3 +116,77 @@
 @media (prefers-reduced-motion: reduce) {
   .monument-scene { transform: none !important; }
 }
+
+
+/* Odd-One monochrome + electric blue design system */
+:root {
+  --bg: #05070b;
+  --fg: #f5f7fb;
+  --muted: #929bad;
+  --line: #252c39;
+  --gold: #4f8cff;
+  --gold-bright: #c5dcff;
+  --panel: #0b1019;
+}
+body { background: var(--bg); color: var(--fg); }
+.hero {
+  background: radial-gradient(ellipse at 49% 44%, #12366b40 0%, transparent 38%),
+              radial-gradient(ellipse at 14% 78%, #10264a26, transparent 42%), #05070b;
+}
+.hero:before { background-image: linear-gradient(#8ba9d808 1px,transparent 1px),linear-gradient(90deg,#8ba9d808 1px,transparent 1px); }
+.brand > span:first-child, .brand-dot { color: #60a5fa; }
+.topnav a:hover, .nav-cta:hover, .link:hover, .pass button:hover { color: #dbeafe; }
+.nav-cta { border-color: #3b82f64d; color: #bfdbfe; }
+.eyebrow { color: #a9bddc; }
+.eyebrow-line, .scroll-dot { background: #60a5fa; }
+.chapter-tag span, .kicker { color: #60a5fa; }
+h1 em, h2 em { color: #bfdbfe; }
+.primary-link { border-color: #3b82f64d; color: #bfdbfe; }
+.primary-link:hover { background: #3b82f61a; border-color: #60a5fa; }
+.monument-scene .halo-one { background: radial-gradient(circle,#3b82f625,transparent 66%); }
+.halo-two, .scene-orbit { border-color: #60a5fa30; }
+.orbit-two { border-color: #60a5fa20; }
+.sun { background: radial-gradient(circle at 38% 34%,#dbeafe,#60a5fa 38%,#1d4ed8 70%,#08162d); box-shadow: 0 0 75px #3b82f640; }
+.scene-coordinate { color: #a8c7f5; }
+.scene-coordinate span { color: #4f8cff; }
+.scene-crosshair { border-color: #93c5fd; }
+.scene-crosshair:after { background: #60a5fa88; }
+.auth-panel { border-color: #60a5fa36; background: linear-gradient(145deg,#0e1420ef,#080c13f7); }
+.auth-panel-head, .auth-panel-foot { border-color: #ffffff12; }
+.live-indicator { background: #60a5fa; box-shadow: 0 0 9px #60a5fa80; }
+.google { background: #101722; border-color: #303d52; }
+.google:hover { background: #152238; border-color: #4f8cff; }
+.google-mark { color: #bfdbfe; }
+.button-arrow, .link, .pass button { color: #93c5fd; }
+.tabs button.selected { background: #17263e; color: #dbeafe; box-shadow: inset 0 0 0 1px #60a5fa35; }
+input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
+.submit { background: linear-gradient(110deg,#bfdbfe,#3b82f6); color: #050b16; border-color: #93c5fd; }
+.submit:hover { background: #dbeafe; }
+.terms a { color: #bfdbfe; }
+.terms a:hover { color: #eff6ff; }
+.secure span { color: #60a5fa; }
+.timeline-section { background: #080b11; }
+.era-card:hover { border-color: #60a5fa70; }
+.era-art { background: radial-gradient(ellipse at 50% 75%,#3b82f626,transparent 55%),#0d1420; }
+.era-number, .art-caption, .era-copy > p { color: #93c5fd; }
+.era-maurya .era-art { background: radial-gradient(ellipse at 50% 100%,#3b82f630,transparent 60%),#0b1220; }
+.pillar { background: linear-gradient(90deg,#172b4b,#bfdbfe 20%,#3b82f6 52%,#dbeafe 80%,#172b4b); }
+.era-classical .era-art { background: radial-gradient(ellipse at 50% 75%,#60a5fa2b,transparent 60%),#0b1220; }
+.arch { border-color: #60a5fa; box-shadow: inset 0 10px 18px #080906,0 0 0 5px #1d4ed8; }
+.arch:before { background: #93c5fd; }
+.arch i, .arch b, .arch em { background: #3b82f6; }
+.era-freedom .era-art { background: linear-gradient(180deg,#0d1729,#1c3761 65%,#080d16); }
+.horizon { background: linear-gradient(180deg,#3b82f626,transparent); border-top-color: #93c5fd88; }
+.horizon:before { background: #93c5fd70; box-shadow: 0 15px #60a5fa26,0 31px #60a5fa26; }
+.closing-section { background: radial-gradient(ellipse at 74% 48%,#1d4ed829,transparent 45%),#05070b; }
+.closing-orbit { border-color: #60a5fa30; box-shadow: 0 0 0 35px #60a5fa08,0 0 0 80px #60a5fa05,inset 0 0 100px #60a5fa0a; }
+.closing-orbit:before, .closing-orbit:after { border-color: #60a5fa24; }
+.closing-section footer a { color: #93c5fd; }
+.scroll-progress { background: linear-gradient(90deg,#1d4ed8,#60a5fa,#dbeafe); box-shadow: 0 0 14px #3b82f670; }
+.cursor-glow { background: radial-gradient(circle,#60a5fa13 0%,#3b82f607 34%,transparent 70%); }
+.era-card:before { background: radial-gradient(circle at var(--card-glow-x,50%) var(--card-glow-y,50%),#60a5fa20,transparent 55%); }
+.era-art:before { background: linear-gradient(115deg,transparent 38%,#bfdbfe14 49%,transparent 60%); }
+@media (min-width: 921px) {
+  .hero { background: radial-gradient(ellipse at 49% 44%,#12366b40 0%,transparent 38%),#05070b; }
+  .auth-panel { border-color: #60a5fa42; }
+}
