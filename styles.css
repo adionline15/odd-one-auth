@@ -55,3 +55,14 @@
   .hero-copy,.chapter-tag,.hero-intro,.hero-actions,.auth-panel,.eyebrow-line,.india-mark path,.sun,.orbit-one,.orbit-two,.scene-crosshair,.live-indicator,.closing-orbit { animation:none!important; }
   .motion-reveal { opacity:1; transform:none; transition:none; }
 }
+
+
+/* Progressive WebGL history scene: the SVG remains visible until WebGL succeeds. */
+.monument-scene{overflow:visible}
+.history-webgl{position:absolute;inset:0;width:100%;height:100%;z-index:1;opacity:0;transition:opacity 900ms ease;pointer-events:none}
+.monument-scene.has-webgl .history-webgl{opacity:1}
+.monument-scene.has-webgl .india-mark{opacity:0;visibility:hidden;animation:none}
+.monument-scene.has-webgl .sun{opacity:.16}
+.monument-scene.has-webgl .scene-halo{opacity:.65}
+@media (max-width:900px){.history-webgl{opacity:.88}.monument-scene.has-webgl .india-mark{display:none}}
+@media (prefers-reduced-motion:reduce){.history-webgl{display:none!important}.monument-scene.has-webgl .india-mark{display:block!important;visibility:visible!important;opacity:1!important}}
