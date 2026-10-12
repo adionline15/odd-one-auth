@@ -347,3 +347,53 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
     width: min(54vw, 940px);
   }
 }
+
+
+/* Scroll cinema: keep the Earth viewport-centered and let it grow with the journey */
+:root { --earth-scroll: 0; }
+.hero { overflow: visible !important; }
+.world-globe {
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: clamp(440px, 56vw, 820px) !important;
+  aspect-ratio: 1;
+  height: auto !important;
+  transform: translate(-50%, -50%) scale(calc(.76 + var(--earth-scroll, 0) * .86)) !important;
+  transform-origin: center;
+  transition: opacity .2s linear;
+  z-index: 0 !important;
+  will-change: transform;
+}
+.hero { background: radial-gradient(ellipse at 50% 48%, #123f7a2b 0%, transparent 58%), #05070b !important; }
+.timeline-section {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(180deg, #090d14e8, #090d14d9) !important;
+}
+.closing-section {
+  position: relative;
+  z-index: 1;
+  background: radial-gradient(ellipse at 50% 48%, #0b1a2dc9, #05070bf0 75%) !important;
+}
+.hero-copy, .auth-panel, .hero-footnote, .topbar { z-index: 3; }
+@media (min-width: 921px) {
+  .world-globe { width: clamp(480px, 56vw, 820px) !important; }
+}
+@media (max-width: 920px) {
+  .world-globe {
+    width: 105vw !important;
+    transform: translate(-50%, -50%) scale(calc(.58 + var(--earth-scroll, 0) * .52)) !important;
+  }
+  .hero { overflow: visible !important; }
+}
+@media (max-width: 620px) {
+  .world-globe {
+    width: 118vw !important;
+    transform: translate(-50%, -50%) scale(calc(.52 + var(--earth-scroll, 0) * .45)) !important;
+  }
+  .timeline-section { background: linear-gradient(180deg, #090d14ee, #090d14e8) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-globe { position: absolute !important; transform: translate(-50%, -50%) !important; }
+}
