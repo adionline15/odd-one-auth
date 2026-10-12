@@ -84,6 +84,8 @@
     progress.style.transform = `scaleX(${ratio})`;
     const heroHeight = hero ? hero.offsetHeight : 1;
     root.style.setProperty("--hero-scroll", Math.min(scrollY / heroHeight, 1).toFixed(3));
+    const journeyProgress = max > 0 ? Math.min(Math.max(scrollY / max, 0), 1) : 0;
+    root.style.setProperty("--earth-scroll", journeyProgress.toFixed(3));
     scrollRaf = 0;
   };
   window.addEventListener("scroll", () => {
