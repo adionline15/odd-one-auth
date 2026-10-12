@@ -29,15 +29,50 @@
       renderer.toneMappingExposure = 1.12;
 
       scene.add(new THREE.AmbientLight(0x8d9aa8, 1.25));
-      const key = new THREE.PointLight(0xf2c77f, 65, 24);
+      const key = new THREE.PointLight(0xf2c77f, 82, 24);
       key.position.set(-3.5, 4.2, 5);
       scene.add(key);
-      const rim = new THREE.PointLight(0x9b6332, 42, 20);
+      const rim = new THREE.PointLight(0x9b6332, 58, 20);
       rim.position.set(4, -2, -1);
       scene.add(rim);
+      const coolFill = new THREE.PointLight(0x667c88, 18, 18);
+      coolFill.position.set(3.5, 2.2, 3);
+      scene.add(coolFill);
 
       const group = new THREE.Group();
       scene.add(group);
+
+      // Cinematic environment layers: distant ridgelines and a quiet horizon behind the relief.
+      const horizon = new THREE.Group();
+      scene.add(horizon);
+      const ridgeMaterialA = new THREE.MeshStandardMaterial({ color: 0x201a13, roughness: 1, metalness: 0 });
+      const ridgeMaterialB = new THREE.MeshStandardMaterial({ color: 0x302116, roughness: 1, metalness: 0 });
+      const makeRidge = (y, z, height, material, seed) => {
+        const ridgePoints = [];
+        for (let i = 0; i <= 48; i++) {
+          const x = -8 + i / 48 * 16;
+          const peak = Math.sin(i * 0.43 + seed) * 0.34 + Math.sin(i * 0.17 + seed * 2) * 0.42;
+          ridgePoints.push(new THREE.Vector2(x, y + peak * height));
+        }
+        const ridgeShape = new THREE.Shape();
+        ridgeShape.moveTo(-8, -4);
+        ridgeShape.lineTo(ridgePoints[0].x, ridgePoints[0].y);
+        ridgePoints.forEach((p) => ridgeShape.lineTo(p.x, p.y));
+        ridgeShape.lineTo(8, -4);
+        ridgeShape.closePath();
+        const ridge = new THREE.Mesh(new THREE.ShapeGeometry(ridgeShape), material);
+        ridge.position.z = z;
+        horizon.add(ridge);
+      };
+      makeRidge(-2.0, -2.7, 1.2, ridgeMaterialA, 1.1);
+      makeRidge(-2.35, -2.1, 0.75, ridgeMaterialB, 2.8);
+
+      const floorGrid = new THREE.GridHelper(22, 44, 0x755632, 0x44321f);
+      floorGrid.position.set(0, -3.05, -0.8);
+      floorGrid.rotation.x = Math.PI / 2;
+      floorGrid.material.transparent = true;
+      floorGrid.material.opacity = 0.14;
+      scene.add(floorGrid);
 
       // Stylised extruded outline of the Indian peninsula; the original SVG remains the fallback.
       const points = [
@@ -156,6 +191,8 @@
         group.rotation.y = Math.sin(t * 0.12) * 0.075 + pointer.x * 0.72;
         group.rotation.x = Math.cos(t * 0.1) * 0.028 + pointer.y * 0.72;
         group.position.y = Math.sin(t * 0.38) * 0.045;
+        horizon.position.x = pointer.x * -0.18;
+        floorGrid.position.x = pointer.x * -0.12;
         ring.rotation.z += 0.0009;
         ring2.rotation.z -= 0.0006;
         particles.rotation.y = t * 0.008;
