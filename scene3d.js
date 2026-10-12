@@ -21,7 +21,7 @@
       const scene = new THREE.Scene();
       scene.fog = new THREE.FogExp2(0x090a0b, 0.075);
       const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-      camera.position.set(0, 0.25, 12);
+      camera.position.set(0, 0.2, 10.8);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
       renderer.setSize(host.clientWidth, host.clientHeight, false);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -47,12 +47,33 @@
       const outline = new THREE.CatmullRomCurve3(points.map(([x, y]) => new THREE.Vector3(x, y, 0)), true, 'centripetal', 0.35);
       const smoothPoints = outline.getPoints(150).map(({ x, y }) => new THREE.Vector2(x, y));
       const shape = new THREE.Shape(smoothPoints);
-      const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.3, bevelEnabled: true, bevelSegments: 6, steps: 1, bevelSize: 0.11, bevelThickness: 0.12, curveSegments: 8 });
+      const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.22, bevelEnabled: true, bevelSegments: 8, steps: 1, bevelSize: 0.12, bevelThickness: 0.16, curveSegments: 10 });
       geometry.computeVertexNormals();
-      const stone = new THREE.MeshStandardMaterial({ color: 0x9d7950, metalness: 0.2, roughness: 0.72, emissive: 0x261609, emissiveIntensity: 0.25 });
+
+      // Sculpt the top face into a subtle relief rather than a flat badge.
+      const position = geometry.attributes.position;
+      for (let i = 0; i < position.count; i++) {
+        const x = position.getX(i);
+        const y = position.getY(i);
+        const z = position.getZ(i);
+        if (z > 0.18) {
+          const ridge = Math.sin(x * 2.4 + y * 1.3) * Math.cos(y * 2.7 - x * 0.7);
+          const foothills = Math.sin(x * 4.5) * Math.sin(y * 3.2) * 0.5;
+          position.setZ(i, z + ridge * 0.075 + foothills * 0.035);
+        }
+      }
+      position.needsUpdate = true;
+      geometry.computeVertexNormals();
+      const stone = new THREE.MeshStandardMaterial({ color: 0x8b6843, metalness: 0.08, roughness: 0.9, emissive: 0x1c1007, emissiveIntensity: 0.18, flatShading: false });
       const land = new THREE.Mesh(geometry, stone);
       land.position.set(-0.25, -0.05, 0);
       group.add(land);
+
+      // A dark relief plinth creates a visible edge and separates the landform from the background.
+      const plinthGeometry = new THREE.ExtrudeGeometry(shape, { depth: 0.2, bevelEnabled: true, bevelSegments: 3, bevelSize: 0.05, bevelThickness: 0.06, curveSegments: 8 });
+      const plinth = new THREE.Mesh(plinthGeometry, new THREE.MeshStandardMaterial({ color: 0x17130e, metalness: 0.28, roughness: 0.6 }));
+      plinth.position.set(-0.25, -0.05, -0.23);
+      group.add(plinth);
       const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 28), new THREE.LineBasicMaterial({ color: 0xe7c68d, transparent: true, opacity: 0.22 }));
       edges.position.copy(land.position);
       group.add(edges);
@@ -74,17 +95,25 @@
       contourGroup.position.copy(land.position);
       group.add(contourGroup);
 
-      const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xd9b77a, transparent: true, opacity: 0.3 });
+      // Deep atmospheric backlight and a low horizon plane add cinematic scale.
+      const backGlow = new THREE.Mesh(
+        new THREE.SphereGeometry(2.8, 32, 32),
+        new THREE.MeshBasicMaterial({ color: 0x9a5d2d, transparent: true, opacity: 0.055, side: THREE.BackSide })
+      );
+      backGlow.position.set(0.25, 0.45, -1.5);
+      group.add(backGlow);
+
+      const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xd9b77a, transparent: true, opacity: 0.16 });
       const ring = new THREE.Mesh(new THREE.TorusGeometry(3.15, 0.008, 6, 160), ringMaterial);
       ring.rotation.set(0.9, 0.2, -0.4);
       ring.position.z = -0.4;
       group.add(ring);
-      const ring2 = new THREE.Mesh(new THREE.TorusGeometry(3.45, 0.005, 6, 160), new THREE.MeshBasicMaterial({ color: 0x9d7144, transparent: true, opacity: 0.23 }));
+      const ring2 = new THREE.Mesh(new THREE.TorusGeometry(3.45, 0.005, 6, 160), new THREE.MeshBasicMaterial({ color: 0x9d7144, transparent: true, opacity: 0.12 }));
       ring2.rotation.set(1.3, -0.3, 0.65);
       ring2.position.z = -0.7;
       group.add(ring2);
 
-      const particleCount = window.innerWidth < 700 ? 220 : 420;
+      const particleCount = window.innerWidth < 700 ? 130 : 280;
       const positions = new Float32Array(particleCount * 3);
       for (let i = 0; i < particleCount; i++) {
         positions[i * 3] = (Math.random() - 0.5) * 12;
@@ -93,7 +122,7 @@
       }
       const particleGeometry = new THREE.BufferGeometry();
       particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      const particles = new THREE.Points(particleGeometry, new THREE.PointsMaterial({ color: 0xe8c98e, size: 0.018, transparent: true, opacity: 0.75, sizeAttenuation: true }));
+      const particles = new THREE.Points(particleGeometry, new THREE.PointsMaterial({ color: 0xe8c98e, size: 0.024, transparent: true, opacity: 0.55, sizeAttenuation: true }));
       scene.add(particles);
 
       const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
