@@ -66,3 +66,53 @@
 .monument-scene.has-webgl .scene-halo{opacity:.65}
 @media (max-width:900px){.history-webgl{opacity:.88}.monument-scene.has-webgl .india-mark{display:none}}
 @media (prefers-reduced-motion:reduce){.history-webgl{display:none!important}.monument-scene.has-webgl .india-mark{display:block!important;visibility:visible!important;opacity:1!important}}
+
+
+/* Cinematic hero v2 — let the scene feel like an environment, not a product icon. */
+@media (min-width: 921px) {
+  .hero { overflow: clip; }
+  .monument-scene {
+    position: absolute;
+    z-index: 0;
+    left: 19%;
+    top: 8%;
+    width: min(62vw, 930px);
+    height: 88%;
+    min-height: 0;
+    opacity: .92;
+    pointer-events: auto;
+    transform: translate3d(var(--scene-x),var(--scene-y),0);
+  }
+  .hero-copy { z-index: 2; max-width: 480px; }
+  .hero-copy h1 { text-shadow: 0 4px 36px #0008; }
+  .auth-panel {
+    z-index: 4;
+    background: linear-gradient(145deg,rgba(20,19,15,.88),rgba(9,10,10,.92));
+    border-color: #cdb47a36;
+    box-shadow: 0 30px 110px #000b, inset 0 1px #ffffff08;
+  }
+  .scene-halo.halo-two { width: 74%; }
+  .scene-orbit { opacity: .7; }
+  .scene-coordinate { text-shadow: 0 2px 8px #000; }
+  .hero:after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg,#090a0b 0%,#090a0b08 40%,#090a0b16 62%,#090a0b 100%),
+                linear-gradient(0deg,#090a0b 0%,transparent 22%,transparent 78%,#090a0b70 100%);
+  }
+  .hero-copy, .auth-panel, .hero-footnote { position: relative; z-index: 3; }
+  .monument-scene { z-index: 0; }
+}
+@media (min-width: 1500px) {
+  .monument-scene { left: 20%; width: min(60vw, 980px); }
+}
+@media (max-width: 920px) {
+  .monument-scene { z-index: 0; }
+  .hero-copy, .auth-panel { position: relative; z-index: 2; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .monument-scene { transform: none !important; }
+}
