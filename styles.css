@@ -220,3 +220,24 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
 .world-globe-grid { position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(0deg,transparent 0 9.7%,#a8d8ff18 10% 10.15%,transparent 10.4% 19.5%),repeating-linear-gradient(90deg,transparent 0 9.7%,#a8d8ff17 10% 10.15%,transparent 10.4% 19.5%);mask-image:radial-gradient(circle,#000 57%,transparent 72%); }
 .world-globe-shine { background:linear-gradient(112deg,transparent 15%,#a7d7ff1c 35%,transparent 57%),linear-gradient(90deg,transparent 45%,#01030ab0 100%); }
 @media(max-width:920px){.world-globe-land{opacity:.7}.world-globe-grid{opacity:.45}}
+
+
+/* Real WebGL Earth: interactive globe canvas with a graceful CSS fallback */
+.world-globe { overflow: visible; background: transparent; box-shadow: none; }
+.world-globe > .world-globe-land,
+.world-globe > .world-globe-grid,
+.world-globe > .world-globe-shine,
+.world-globe:before,
+.world-globe:after { display: none; }
+.earth-webgl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; border-radius: 50%; cursor: grab; touch-action: pan-y; }
+.earth-webgl:active { cursor: grabbing; }
+.world-globe.has-3d-earth { filter: drop-shadow(0 0 35px #2563eb20); }
+.world-globe.earth-css-fallback { overflow: hidden; background: radial-gradient(circle at 34% 28%,#3478b9 0%,#174879 25%,#0a2444 56%,#030711 78%); box-shadow: inset -60px -16px 100px #01030af2,inset 14px 12px 42px #a8d8ff30,0 0 110px #1d4ed83b; }
+.world-globe.earth-css-fallback .world-globe-land,
+.world-globe.earth-css-fallback .world-globe-grid,
+.world-globe.earth-css-fallback .world-globe-shine { display: block; }
+@media (prefers-reduced-motion: reduce) {
+  .earth-webgl { display: none; }
+  .world-globe { overflow: hidden; background: radial-gradient(circle at 34% 28%,#3478b9 0%,#174879 25%,#0a2444 56%,#030711 78%); }
+  .world-globe .world-globe-land,.world-globe .world-globe-grid,.world-globe .world-globe-shine { display: block; }
+}
