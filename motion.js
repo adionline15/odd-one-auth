@@ -1,5 +1,6 @@
 (() => {
   const root = document.documentElement;
+  root.classList.add("motion-ready");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const progress = document.createElement("div");
   progress.className = "scroll-progress";
