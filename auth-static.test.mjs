@@ -41,3 +41,9 @@ test('signup confirmation password has an accessible visibility toggle', () => {
   assert.match(html, /aria-label="Show confirmation password"/);
   assert.match(auth, /bindPasswordToggle\(confirm,\$\("toggle-confirm"\),"confirmation password"\)/);
 });
+
+test('accent hover token is defined when referenced', () => {
+  const styles = read('./styles.css');
+  assert.match(styles, /--lime-bright\s*:/);
+  assert.match(styles, /color:\s*var\(--lime-bright\)/);
+});
