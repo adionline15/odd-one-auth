@@ -71,3 +71,15 @@ test('cinematic motion layer includes pointer response, scroll progress and redu
   assert.match(styles, /\.scroll-progress/);
   assert.match(styles, /prefers-reduced-motion/);
 });
+
+test('progressive Three.js scene is loaded with a graceful SVG fallback', () => {
+  const html = read('./index.html');
+  const scene = read('./scene3d.js');
+  const styles = read('./styles.css');
+  assert.match(html, /type="module" src="scene3d\.js"/);
+  assert.match(scene, /WebGLRenderer/);
+  assert.match(scene, /ExtrudeGeometry/);
+  assert.match(scene, /prefers-reduced-motion/);
+  assert.match(scene, /\.catch\(\(\) => canvas\.remove\(\)\)/);
+  assert.match(styles, /\.monument-scene\.has-webgl \.india-mark/);
+});
