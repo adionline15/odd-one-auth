@@ -190,3 +190,17 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
   .hero { background: radial-gradient(ellipse at 49% 44%,#12366b40 0%,transparent 38%),#05070b; }
   .auth-panel { border-color: #60a5fa42; }
 }
+
+
+/* Atmospheric globe behind the hero experience */
+.world-globe{position:absolute;z-index:0;left:22%;top:50%;width:min(65vw,820px);aspect-ratio:1;transform:translateY(-50%);border-radius:50%;pointer-events:none;overflow:hidden;opacity:.62;background:radial-gradient(circle at 34% 28%,#244d83 0%,#10294b 24%,#081426 52%,#03060c 73%);box-shadow:inset -42px -12px 90px #01030a,inset 12px 10px 45px #7db8ff18,0 0 90px #1d4ed81c;}
+.world-globe:before,.world-globe:after,.world-globe-grid:before,.world-globe-grid:after{content:"";position:absolute;inset:0;border:1px solid #8fc3ff26;border-radius:50%;}
+.world-globe:before{inset:0 24%;border-radius:50%;}
+.world-globe:after{inset:0 42%;border-radius:50%;}
+.world-globe-grid:before{inset:22% -5%;border-left:0;border-right:0;}
+.world-globe-grid:after{inset:38% -5%;border-left:0;border-right:0;}
+.world-globe-shine{position:absolute;inset:0;border-radius:50%;background:linear-gradient(110deg,transparent 20%,#7db8ff0b 42%,transparent 62%),linear-gradient(90deg,transparent 55%,#01030ac9 100%);}
+@media(min-width:921px){.world-globe{left:20%;top:52%;width:min(61vw,850px)}.hero:after{background:linear-gradient(90deg,#05070b 0%,#05070b12 39%,#05070b26 62%,#05070b 100%),linear-gradient(0deg,#05070b 0%,transparent 22%,transparent 78%,#05070b70 100%);}}
+@media(max-width:920px){.world-globe{width:min(105vw,640px);left:50%;top:32%;transform:translate(-50%,-50%);opacity:.38}.world-globe-grid{opacity:.8}}
+@media(max-width:620px){.world-globe{top:28%;width:118vw;opacity:.32}}
+@media(prefers-reduced-motion:reduce){.world-globe{animation:none}}
