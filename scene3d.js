@@ -43,19 +43,36 @@
       const points = [
         [-1.05,3.25],[-.35,3.05],[.1,2.62],[.8,2.42],[1.15,1.88],[1.85,1.52],[1.55,1.03],[1.92,.63],[1.42,.15],[1.12,-.38],[.95,-.95],[.42,-1.48],[.18,-2.12],[-.18,-2.95],[-.55,-2.25],[-.78,-1.62],[-1.22,-1.22],[-1.52,-.7],[-1.95,-.34],[-1.72,.18],[-2.05,.55],[-1.72,.98],[-1.92,1.42],[-1.55,1.78],[-1.58,2.24],[-1.28,2.65]
       ];
-      const shape = new THREE.Shape();
-      shape.moveTo(points[0][0], points[0][1]);
-      points.slice(1).forEach(([x,y]) => shape.lineTo(x,y));
-      shape.closePath();
-      const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.22, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: 0.08, bevelThickness: 0.08, curveSegments: 2 });
+      // Smooth the stylised silhouette with a closed spline instead of sharp polygon corners.
+      const outline = new THREE.CatmullRomCurve3(points.map(([x, y]) => new THREE.Vector3(x, y, 0)), true, 'centripetal', 0.35);
+      const smoothPoints = outline.getPoints(150).map(({ x, y }) => new THREE.Vector2(x, y));
+      const shape = new THREE.Shape(smoothPoints);
+      const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.3, bevelEnabled: true, bevelSegments: 6, steps: 1, bevelSize: 0.11, bevelThickness: 0.12, curveSegments: 8 });
       geometry.computeVertexNormals();
-      const stone = new THREE.MeshStandardMaterial({ color: 0x987047, metalness: 0.38, roughness: 0.48, emissive: 0x2a1608, emissiveIntensity: 0.45 });
+      const stone = new THREE.MeshStandardMaterial({ color: 0x9d7950, metalness: 0.2, roughness: 0.72, emissive: 0x261609, emissiveIntensity: 0.25 });
       const land = new THREE.Mesh(geometry, stone);
       land.position.set(-0.25, -0.05, 0);
       group.add(land);
-      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 18), new THREE.LineBasicMaterial({ color: 0xf1d6a0, transparent: true, opacity: 0.55 }));
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 28), new THREE.LineBasicMaterial({ color: 0xe7c68d, transparent: true, opacity: 0.22 }));
       edges.position.copy(land.position);
       group.add(edges);
+
+      // Fine, restrained elevation-like contour lines add depth without overwhelming the silhouette.
+      const contourGroup = new THREE.Group();
+      const contourMaterial = new THREE.LineBasicMaterial({ color: 0xf2d7a5, transparent: true, opacity: 0.12 });
+      for (let i = 0; i < 5; i++) {
+        const contourPoints = [];
+        const rx = 0.45 + i * 0.22;
+        const ry = 0.42 + i * 0.31;
+        for (let step = 0; step <= 100; step++) {
+          const a = (step / 100) * Math.PI * 2;
+          contourPoints.push(new THREE.Vector3(-0.1 + Math.cos(a) * rx, 0.75 + Math.sin(a) * ry, 0.315));
+        }
+        const contour = new THREE.Line(new THREE.BufferGeometry().setFromPoints(contourPoints), contourMaterial);
+        contourGroup.add(contour);
+      }
+      contourGroup.position.copy(land.position);
+      group.add(contourGroup);
 
       const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xd9b77a, transparent: true, opacity: 0.3 });
       const ring = new THREE.Mesh(new THREE.TorusGeometry(3.15, 0.008, 6, 160), ringMaterial);
@@ -107,9 +124,9 @@
         const t = clock.getElapsedTime();
         pointer.x += (pointer.tx - pointer.x) * 0.035;
         pointer.y += (pointer.ty - pointer.y) * 0.035;
-        group.rotation.y = Math.sin(t * 0.16) * 0.12 + pointer.x;
-        group.rotation.x = Math.cos(t * 0.13) * 0.045 + pointer.y;
-        group.position.y = Math.sin(t * 0.55) * 0.07;
+        group.rotation.y = Math.sin(t * 0.12) * 0.075 + pointer.x * 0.72;
+        group.rotation.x = Math.cos(t * 0.1) * 0.028 + pointer.y * 0.72;
+        group.position.y = Math.sin(t * 0.38) * 0.045;
         ring.rotation.z += 0.0009;
         ring2.rotation.z -= 0.0006;
         particles.rotation.y = t * 0.008;
