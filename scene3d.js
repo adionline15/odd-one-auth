@@ -1,9 +1,9 @@
 (() => {
-  const host = document.querySelector('.monument-scene');
+  const host = document.querySelector('.world-globe');
   if (!host || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const canvas = document.createElement('canvas');
-  canvas.className = 'history-webgl';
+  canvas.className = 'earth-webgl';
   canvas.setAttribute('aria-hidden', 'true');
   host.prepend(canvas);
 
@@ -12,208 +12,203 @@
       if (!canvas.isConnected) return;
       let renderer;
       try {
-        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
+        renderer = new THREE.WebGLRenderer({
+          canvas, alpha: true, antialias: true, powerPreference: 'high-performance'
+        });
       } catch (_) {
         canvas.remove();
+        host.classList.add('earth-css-fallback');
         return;
       }
 
       const scene = new THREE.Scene();
-      scene.fog = new THREE.FogExp2(0x090a0b, 0.075);
-      const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-      camera.position.set(0, 0.2, 10.8);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
-      renderer.setSize(host.clientWidth, host.clientHeight, false);
+      const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+      camera.position.set(0, 0, 4.15);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.12;
+      renderer.toneMappingExposure = 1.18;
 
-      scene.add(new THREE.AmbientLight(0x8d9aa8, 1.25));
-      const key = new THREE.PointLight(0xf2c77f, 82, 24);
-      key.position.set(-3.5, 4.2, 5);
-      scene.add(key);
-      const rim = new THREE.PointLight(0x9b6332, 58, 20);
-      rim.position.set(4, -2, -1);
-      scene.add(rim);
-      const coolFill = new THREE.PointLight(0x667c88, 18, 18);
-      coolFill.position.set(3.5, 2.2, 3);
-      scene.add(coolFill);
+      scene.add(new THREE.AmbientLight(0x9bbce8, 1.15));
+      const sun = new THREE.DirectionalLight(0xffffff, 3.1);
+      sun.position.set(-3.5, 2.6, 4.5);
+      scene.add(sun);
+      const blueFill = new THREE.DirectionalLight(0x347bff, 1.5);
+      blueFill.position.set(4, -1, 2);
+      scene.add(blueFill);
 
-      const group = new THREE.Group();
-      scene.add(group);
-
-      // Cinematic environment layers: distant ridgelines and a quiet horizon behind the relief.
-      const horizon = new THREE.Group();
-      scene.add(horizon);
-      const ridgeMaterialA = new THREE.MeshStandardMaterial({ color: 0x201a13, roughness: 1, metalness: 0 });
-      const ridgeMaterialB = new THREE.MeshStandardMaterial({ color: 0x302116, roughness: 1, metalness: 0 });
-      const makeRidge = (y, z, height, material, seed) => {
-        const ridgePoints = [];
-        for (let i = 0; i <= 48; i++) {
-          const x = -8 + i / 48 * 16;
-          const peak = Math.sin(i * 0.43 + seed) * 0.34 + Math.sin(i * 0.17 + seed * 2) * 0.42;
-          ridgePoints.push(new THREE.Vector2(x, y + peak * height));
-        }
-        const ridgeShape = new THREE.Shape();
-        ridgeShape.moveTo(-8, -4);
-        ridgeShape.lineTo(ridgePoints[0].x, ridgePoints[0].y);
-        ridgePoints.forEach((p) => ridgeShape.lineTo(p.x, p.y));
-        ridgeShape.lineTo(8, -4);
-        ridgeShape.closePath();
-        const ridge = new THREE.Mesh(new THREE.ShapeGeometry(ridgeShape), material);
-        ridge.position.z = z;
-        horizon.add(ridge);
-      };
-      makeRidge(-2.0, -2.7, 1.2, ridgeMaterialA, 1.1);
-      makeRidge(-2.35, -2.1, 0.75, ridgeMaterialB, 2.8);
-
-      const floorGrid = new THREE.GridHelper(22, 44, 0x755632, 0x44321f);
-      floorGrid.position.set(0, -3.05, -0.8);
-      floorGrid.rotation.x = Math.PI / 2;
-      floorGrid.material.transparent = true;
-      floorGrid.material.opacity = 0.14;
-      scene.add(floorGrid);
-
-      // Stylised extruded outline of the Indian peninsula; the original SVG remains the fallback.
-      const points = [
-        [-1.05,3.25],[-.35,3.05],[.1,2.62],[.8,2.42],[1.15,1.88],[1.85,1.52],[1.55,1.03],[1.92,.63],[1.42,.15],[1.12,-.38],[.95,-.95],[.42,-1.48],[.18,-2.12],[-.18,-2.95],[-.55,-2.25],[-.78,-1.62],[-1.22,-1.22],[-1.52,-.7],[-1.95,-.34],[-1.72,.18],[-2.05,.55],[-1.72,.98],[-1.92,1.42],[-1.55,1.78],[-1.58,2.24],[-1.28,2.65]
-      ];
-      // Smooth the stylised silhouette with a closed spline instead of sharp polygon corners.
-      const outline = new THREE.CatmullRomCurve3(points.map(([x, y]) => new THREE.Vector3(x, y, 0)), true, 'centripetal', 0.35);
-      const smoothPoints = outline.getPoints(150).map(({ x, y }) => new THREE.Vector2(x, y));
-      const shape = new THREE.Shape(smoothPoints);
-      const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.22, bevelEnabled: true, bevelSegments: 8, steps: 1, bevelSize: 0.12, bevelThickness: 0.16, curveSegments: 10 });
-      geometry.computeVertexNormals();
-
-      // Sculpt the top face into a subtle relief rather than a flat badge.
-      const position = geometry.attributes.position;
-      for (let i = 0; i < position.count; i++) {
-        const x = position.getX(i);
-        const y = position.getY(i);
-        const z = position.getZ(i);
-        if (z > 0.18) {
-          const ridge = Math.sin(x * 2.4 + y * 1.3) * Math.cos(y * 2.7 - x * 0.7);
-          const foothills = Math.sin(x * 4.5) * Math.sin(y * 3.2) * 0.5;
-          position.setZ(i, z + ridge * 0.075 + foothills * 0.035);
-        }
-      }
-      position.needsUpdate = true;
-      geometry.computeVertexNormals();
-      const stone = new THREE.MeshStandardMaterial({ color: 0x8b6843, metalness: 0.08, roughness: 0.9, emissive: 0x1c1007, emissiveIntensity: 0.18, flatShading: false });
-      const land = new THREE.Mesh(geometry, stone);
-      land.position.set(-0.25, -0.05, 0);
-      group.add(land);
-
-      // A dark relief plinth creates a visible edge and separates the landform from the background.
-      const plinthGeometry = new THREE.ExtrudeGeometry(shape, { depth: 0.2, bevelEnabled: true, bevelSegments: 3, bevelSize: 0.05, bevelThickness: 0.06, curveSegments: 8 });
-      const plinth = new THREE.Mesh(plinthGeometry, new THREE.MeshStandardMaterial({ color: 0x17130e, metalness: 0.28, roughness: 0.6 }));
-      plinth.position.set(-0.25, -0.05, -0.23);
-      group.add(plinth);
-      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 28), new THREE.LineBasicMaterial({ color: 0xe7c68d, transparent: true, opacity: 0.22 }));
-      edges.position.copy(land.position);
-      group.add(edges);
-
-      // Fine, restrained elevation-like contour lines add depth without overwhelming the silhouette.
-      const contourGroup = new THREE.Group();
-      const contourMaterial = new THREE.LineBasicMaterial({ color: 0xf2d7a5, transparent: true, opacity: 0.12 });
-      for (let i = 0; i < 5; i++) {
-        const contourPoints = [];
-        const rx = 0.45 + i * 0.22;
-        const ry = 0.42 + i * 0.31;
-        for (let step = 0; step <= 100; step++) {
-          const a = (step / 100) * Math.PI * 2;
-          contourPoints.push(new THREE.Vector3(-0.1 + Math.cos(a) * rx, 0.75 + Math.sin(a) * ry, 0.315));
-        }
-        const contour = new THREE.Line(new THREE.BufferGeometry().setFromPoints(contourPoints), contourMaterial);
-        contourGroup.add(contour);
-      }
-      contourGroup.position.copy(land.position);
-      group.add(contourGroup);
-
-      // Deep atmospheric backlight and a low horizon plane add cinematic scale.
-      const backGlow = new THREE.Mesh(
-        new THREE.SphereGeometry(2.8, 32, 32),
-        new THREE.MeshBasicMaterial({ color: 0x9a5d2d, transparent: true, opacity: 0.055, side: THREE.BackSide })
-      );
-      backGlow.position.set(0.25, 0.45, -1.5);
-      group.add(backGlow);
-
-      const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xd9b77a, transparent: true, opacity: 0.16 });
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(3.15, 0.008, 6, 160), ringMaterial);
-      ring.rotation.set(0.9, 0.2, -0.4);
-      ring.position.z = -0.4;
-      group.add(ring);
-      const ring2 = new THREE.Mesh(new THREE.TorusGeometry(3.45, 0.005, 6, 160), new THREE.MeshBasicMaterial({ color: 0x9d7144, transparent: true, opacity: 0.12 }));
-      ring2.rotation.set(1.3, -0.3, 0.65);
-      ring2.position.z = -0.7;
-      group.add(ring2);
-
-      const particleCount = window.innerWidth < 700 ? 130 : 280;
-      const positions = new Float32Array(particleCount * 3);
-      for (let i = 0; i < particleCount; i++) {
-        positions[i * 3] = (Math.random() - 0.5) * 12;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 7 - 1;
-      }
-      const particleGeometry = new THREE.BufferGeometry();
-      particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      const particles = new THREE.Points(particleGeometry, new THREE.PointsMaterial({ color: 0xe8c98e, size: 0.024, transparent: true, opacity: 0.55, sizeAttenuation: true }));
-      scene.add(particles);
-
-      const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
-      const onPointer = (event) => {
-        const rect = host.getBoundingClientRect();
-        pointer.tx = ((event.clientX - rect.left) / rect.width - 0.5) * 0.7;
-        pointer.ty = ((event.clientY - rect.top) / rect.height - 0.5) * 0.45;
-      };
-      host.addEventListener('pointermove', onPointer, { passive: true });
-      host.addEventListener('pointerleave', () => { pointer.tx = 0; pointer.ty = 0; }, { passive: true });
-
-      let raf = 0;
-      let disposed = false;
-      const clock = new THREE.Clock();
-      const resize = () => {
-        if (disposed) return;
-        const w = Math.max(1, host.clientWidth);
-        const h = Math.max(1, host.clientHeight);
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h, false);
-      };
-      const observer = new ResizeObserver(resize);
-      observer.observe(host);
-      const render = () => {
-        if (disposed) return;
-        raf = requestAnimationFrame(render);
-        const t = clock.getElapsedTime();
-        pointer.x += (pointer.tx - pointer.x) * 0.035;
-        pointer.y += (pointer.ty - pointer.y) * 0.035;
-        group.rotation.y = Math.sin(t * 0.12) * 0.075 + pointer.x * 0.72;
-        group.rotation.x = Math.cos(t * 0.1) * 0.028 + pointer.y * 0.72;
-        group.position.y = Math.sin(t * 0.38) * 0.045;
-        horizon.position.x = pointer.x * -0.18;
-        floorGrid.position.x = pointer.x * -0.12;
-        ring.rotation.z += 0.0009;
-        ring2.rotation.z -= 0.0006;
-        particles.rotation.y = t * 0.008;
-        renderer.render(scene, camera);
-      };
-      host.classList.add('has-webgl');
-      render();
-
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) cancelAnimationFrame(raf);
-        else if (!disposed) render();
+      const earthGroup = new THREE.Group();
+      scene.add(earthGroup);
+      const loader = new THREE.TextureLoader();
+      const loadTexture = (url) => new Promise((resolve) => {
+        loader.load(url, (texture) => {
+          texture.colorSpace = THREE.SRGBColorSpace;
+          resolve(texture);
+        }, undefined, () => resolve(null));
       });
-      window.addEventListener('pagehide', () => {
-        disposed = true;
-        cancelAnimationFrame(raf);
-        observer.disconnect();
-        host.removeEventListener('pointermove', onPointer);
-        geometry.dispose();
-        stone.dispose();
-        renderer.dispose();
-      }, { once: true });
+
+      Promise.all([
+        loadTexture('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg'),
+        loadTexture('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg'),
+        loadTexture('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg'),
+        loadTexture('https://threejs.org/examples/textures/planets/earth_clouds_1024.png')
+      ]).then(([colorMap, normalMap, specularMap, cloudMap]) => {
+        if (!canvas.isConnected) return;
+
+        const earthMaterial = new THREE.MeshPhongMaterial({
+          color: 0xffffff,
+          map: colorMap || null,
+          normalMap: normalMap || null,
+          specularMap: specularMap || null,
+          specular: new THREE.Color(0x2f79d8),
+          shininess: 18
+        });
+        const earth = new THREE.Mesh(new THREE.SphereGeometry(1.43, 96, 96), earthMaterial);
+        earth.rotation.z = -0.12;
+        earthGroup.add(earth);
+
+        if (cloudMap) {
+          const clouds = new THREE.Mesh(
+            new THREE.SphereGeometry(1.455, 96, 96),
+            new THREE.MeshPhongMaterial({
+              map: cloudMap, transparent: true, opacity: 0.22,
+              depthWrite: false, blending: THREE.AdditiveBlending
+            })
+          );
+          clouds.rotation.z = -0.12;
+          earthGroup.add(clouds);
+          earthGroup.userData.clouds = clouds;
+        }
+
+        const atmosphere = new THREE.Mesh(
+          new THREE.SphereGeometry(1.56, 96, 96),
+          new THREE.ShaderMaterial({
+            vertexShader: `
+              varying vec3 vNormal;
+              varying vec3 vViewPosition;
+              void main() {
+                vNormal = normalize(normalMatrix * normal);
+                vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                vViewPosition = -mvPosition.xyz;
+                gl_Position = projectionMatrix * mvPosition;
+              }
+            `,
+            fragmentShader: `
+              varying vec3 vNormal;
+              varying vec3 vViewPosition;
+              void main() {
+                float rim = pow(1.0 - max(dot(normalize(vNormal), normalize(vViewPosition)), 0.0), 2.4);
+                gl_FragColor = vec4(0.16, 0.48, 1.0, rim * 0.82);
+              }
+            `,
+            blending: THREE.AdditiveBlending,
+            side: THREE.BackSide,
+            transparent: true,
+            depthWrite: false
+          })
+        );
+        earthGroup.add(atmosphere);
+
+        const starsCount = window.innerWidth < 700 ? 450 : 950;
+        const starPositions = new Float32Array(starsCount * 3);
+        for (let i = 0; i < starsCount; i++) {
+          starPositions[i * 3] = (Math.random() - 0.5) * 9;
+          starPositions[i * 3 + 1] = (Math.random() - 0.5) * 7;
+          starPositions[i * 3 + 2] = -1.2 - Math.random() * 4;
+        }
+        const starGeometry = new THREE.BufferGeometry();
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const stars = new THREE.Points(starGeometry, new THREE.PointsMaterial({
+          color: 0x9ccaff, size: 0.012, transparent: true, opacity: 0.7
+        }));
+        scene.add(stars);
+
+        const pointer = { x: 0, y: 0, tx: 0, ty: 0, down: false, lastX: 0 };
+        const onPointerMove = (event) => {
+          const rect = host.getBoundingClientRect();
+          pointer.tx = ((event.clientX - rect.left) / rect.width - 0.5) * 0.48;
+          pointer.ty = ((event.clientY - rect.top) / rect.height - 0.5) * 0.28;
+          if (pointer.down) {
+            earth.rotation.y += (event.clientX - pointer.lastX) * 0.006;
+          }
+          pointer.lastX = event.clientX;
+        };
+        const onPointerDown = (event) => {
+          pointer.down = true;
+          pointer.lastX = event.clientX;
+          host.setPointerCapture?.(event.pointerId);
+        };
+        const onPointerUp = () => { pointer.down = false; };
+        host.addEventListener('pointermove', onPointerMove, { passive: true });
+        host.addEventListener('pointerdown', onPointerDown, { passive: true });
+        host.addEventListener('pointerup', onPointerUp, { passive: true });
+        host.addEventListener('pointercancel', onPointerUp, { passive: true });
+        host.addEventListener('pointerleave', () => { pointer.tx = 0; pointer.ty = 0; pointer.down = false; }, { passive: true });
+
+        let raf = 0;
+        let disposed = false;
+        const clock = new THREE.Clock();
+        const resize = () => {
+          if (disposed) return;
+          const w = Math.max(1, host.clientWidth);
+          const h = Math.max(1, host.clientHeight);
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h, false);
+        };
+        const observer = new ResizeObserver(resize);
+        observer.observe(host);
+        const render = () => {
+          if (disposed || document.hidden) return;
+          raf = requestAnimationFrame(render);
+          const t = clock.getElapsedTime();
+          pointer.x += (pointer.tx - pointer.x) * 0.035;
+          pointer.y += (pointer.ty - pointer.y) * 0.035;
+          if (!pointer.down) earth.rotation.y += 0.0018;
+          earth.rotation.x += (pointer.y * 0.2 - earth.rotation.x) * 0.018;
+          earth.rotation.y += pointer.x * 0.004;
+          const clouds = earthGroup.userData.clouds;
+          if (clouds) {
+            clouds.rotation.y = earth.rotation.y + t * 0.0008;
+            clouds.rotation.x = earth.rotation.x;
+          }
+          stars.rotation.y = t * 0.002;
+          renderer.render(scene, camera);
+        };
+        host.classList.add('has-3d-earth');
+        host.classList.remove('earth-css-fallback');
+        resize();
+        render();
+
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) cancelAnimationFrame(raf);
+          else if (!disposed) render();
+        });
+        window.addEventListener('pagehide', () => {
+          disposed = true;
+          cancelAnimationFrame(raf);
+          observer.disconnect();
+          host.removeEventListener('pointermove', onPointerMove);
+          host.removeEventListener('pointerdown', onPointerDown);
+          host.removeEventListener('pointerup', onPointerUp);
+          host.removeEventListener('pointercancel', onPointerUp);
+          earthGroup.traverse((obj) => {
+            obj.geometry?.dispose();
+            if (obj.material) {
+              const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+              materials.forEach((mat) => {
+                Object.values(mat).forEach((value) => { if (value?.isTexture) value.dispose(); });
+                mat.dispose();
+              });
+            }
+          });
+          starGeometry.dispose();
+          renderer.dispose();
+        }, { once: true });
+      });
     })
-    .catch(() => canvas.remove());
+    .catch(() => {
+      canvas.remove();
+      host.classList.add('earth-css-fallback');
+    });
 })();
