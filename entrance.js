@@ -27,7 +27,7 @@
   if (reducedMotion) {
     unlockPanel();
   } else {
-    window.setTimeout(unlockPanel, 680);
+    window.setTimeout(unlockPanel, 340);
   }
 
   document.addEventListener("oddone:textureprogress", event => {
