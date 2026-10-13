@@ -26,7 +26,7 @@
       const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
       camera.position.set(0, 0, 4.15);
       const baseCameraZ = 4.15;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1 : 1.25));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.18;
@@ -119,7 +119,7 @@
         );
         earthGroup.add(atmosphere);
 
-        const starsCount = window.innerWidth < 700 ? 100 : 260;
+        const starsCount = window.innerWidth < 700 ? 60 : 140;
         const starPositions = new Float32Array(starsCount * 3);
         for (let i = 0; i < starsCount; i++) {
           starPositions[i * 3] = (Math.random() - 0.5) * 9;
@@ -129,7 +129,7 @@
         const starGeometry = new THREE.BufferGeometry();
         starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
         const stars = new THREE.Points(starGeometry, new THREE.PointsMaterial({
-          color: 0x9ccaff, size: 0.012, transparent: true, opacity: 0.7
+          color: 0x9ccaff, size: 0.012, transparent: true, opacity: 0.42
         }));
         scene.add(stars);
 
@@ -193,7 +193,7 @@
           rafRunning = true;
           raf = requestAnimationFrame(render);
           // Render at display rate on capable devices; no DOM reads or framework state updates per frame.
-          const frameInterval = window.innerWidth < 700 ? 1000 / 45 : 1000 / 60;
+          const frameInterval = 1000 / 45;
           if (now - lastFrameTime < frameInterval) return;
           lastFrameTime = now;
           const elapsed = clock.getElapsedTime();
