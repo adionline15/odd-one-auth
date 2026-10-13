@@ -9,13 +9,20 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>document.documentElement.classList.add("js");</script>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script defer src="auth.js"></script>
+  <script defer src="entrance.js"></script>
   <script type="module" src="scene3d.js"></script>
 </head>
 <body>
+  <div class="earth-preloader" id="earth-preloader" role="status" aria-live="polite" aria-atomic="true">
+    <div class="preloader-heading"><span>ODD-ONE / EARTH ENGINE</span><b id="earth-progress-label">Preparing Earth textures</b></div>
+    <div class="preloader-track" role="progressbar" aria-label="Earth texture bytes loaded" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="earth-progress"><i id="earth-progress-bar"></i></div>
+    <small id="earth-progress-detail">0 B / 1.24 MiB</small>
+  </div>
   <div class="ambient-grid" aria-hidden="true"></div>
   <div class="world-globe" aria-hidden="true"><div class="world-globe-land"></div><div class="world-globe-grid"></div><div class="world-globe-shine"></div></div>
   <div class="edge-shade" aria-hidden="true"></div>
@@ -30,7 +37,7 @@
   <main class="login-stage">
     <section class="story" aria-label="Odd-One introduction">
       <div class="eyebrow"><span></span> GEOGRAPHY, REIMAGINED</div>
-      <h1>The world is<br>more than <em>a map.</em></h1>
+      <h1 aria-label="The world is more than a map."><span class="word-mask"><span class="word">The</span></span> <span class="word-mask"><span class="word">world</span></span> <span class="word-mask"><span class="word">is</span></span><br><span class="word-mask"><span class="word">more</span></span> <span class="word-mask"><span class="word">than</span></span> <span class="word-mask"><em class="word">a map.</em></span></h1>
       <p class="story-copy">A new way to see India — its places, its connections, and the details that traditional maps miss.</p>
       <div class="story-bottom">
         <div class="coordinates"><span class="coord-mark">⌖</span><div><b>20°35'37.3"N</b><small>78°57'46.4"E · INDIA</small></div></div>
@@ -69,6 +76,6 @@
     </aside>
   </main>
 
-  <footer class="site-footer"><span>ODD-ONE.IN © 2026</span><span>SEE THE CONNECTIONS OTHERS MISS</span><span class="footer-indicator"><i></i> SPATIAL ENGINE</span></footer>
+  <footer class="site-footer"><span>ODD-ONE.IN © 2026</span><span>SEE THE CONNECTIONS OTHERS MISS</span><span class="footer-indicator"><i></i> SPATIAL ENGINE</span><a class="texture-credit" href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noreferrer">EARTH TEXTURES: SOLAR SYSTEM SCOPE / INOVE · CC BY 4.0</a></footer>
 </body>
 </html>
