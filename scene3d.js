@@ -24,7 +24,7 @@
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
       camera.position.set(0, 0, 4.15);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1 : 1.25));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.18;
@@ -63,13 +63,13 @@
           specular: new THREE.Color(0x2f79d8),
           shininess: 18
         });
-        const earth = new THREE.Mesh(new THREE.SphereGeometry(1.43, 96, 96), earthMaterial);
+        const earth = new THREE.Mesh(new THREE.SphereGeometry(1.43, 64, 64), earthMaterial);
         earth.rotation.z = -0.12;
         earthGroup.add(earth);
 
         if (cloudMap) {
           const clouds = new THREE.Mesh(
-            new THREE.SphereGeometry(1.455, 96, 96),
+            new THREE.SphereGeometry(1.455, 48, 48),
             new THREE.MeshPhongMaterial({
               map: cloudMap, transparent: true, opacity: 0.22,
               depthWrite: false, blending: THREE.AdditiveBlending
@@ -81,7 +81,7 @@
         }
 
         const atmosphere = new THREE.Mesh(
-          new THREE.SphereGeometry(1.56, 96, 96),
+          new THREE.SphereGeometry(1.56, 48, 48),
           new THREE.ShaderMaterial({
             vertexShader: `
               varying vec3 vNormal;
@@ -109,7 +109,7 @@
         );
         earthGroup.add(atmosphere);
 
-        const starsCount = window.innerWidth < 700 ? 450 : 950;
+        const starsCount = window.innerWidth < 700 ? 100 : 260;
         const starPositions = new Float32Array(starsCount * 3);
         for (let i = 0; i < starsCount; i++) {
           starPositions[i * 3] = (Math.random() - 0.5) * 9;
@@ -148,6 +148,7 @@
         let raf = 0;
         let disposed = false;
         let scrollRotation = 0;
+        let lastFrameTime = 0;
         const clock = new THREE.Clock();
         const resize = () => {
           if (disposed) return;
@@ -159,9 +160,12 @@
         };
         const observer = new ResizeObserver(resize);
         observer.observe(host);
-        const render = () => {
+        const render = (now = 0) => {
           if (disposed || document.hidden) return;
           raf = requestAnimationFrame(render);
+          // Cap the scene to ~30fps: keep interactions smooth without monopolising the GPU.
+          if (now - lastFrameTime < 33) return;
+          lastFrameTime = now;
           const t = clock.getElapsedTime();
           const scrollProgress = Math.min(1, Math.max(0, Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--earth-scroll')) || 0));
           // The Three.js Earth texture places India's longitude ~168 degrees away from the camera-facing meridian.
@@ -181,7 +185,7 @@
             clouds.rotation.y = earth.rotation.y + t * 0.0008;
             clouds.rotation.x = earth.rotation.x;
           }
-          stars.rotation.y = t * 0.002;
+          stars.rotation.y = t * 0.0005;
           renderer.render(scene, camera);
         };
         host.classList.add('has-3d-earth');
