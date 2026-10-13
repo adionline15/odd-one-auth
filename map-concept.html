@@ -44,7 +44,7 @@
   <div class="sectionline"></div>
   <div class="metricgrid"><div class="metric"><small>LAND AREA</small><strong>3.29M <em>km²</em></strong></div><div class="metric"><small>STATES / UTs</small><strong>36 <em>regions</em></strong></div></div>
   <div class="eyebrow" style="margin-top:17px">MAP LAYERS</div>
-  <div class="layers"><button class="layer active" data-layer="dark"><i></i>Night</button><button class="layer" data-layer="terrain"><i></i>Terrain</button><button class="layer" data-layer="satellite"><i></i>Satellite</button></div>
+  <div class="layers"><button class="layer active" data-layer="dark"><i></i>Night</button><button class="layer" data-layer="terrain"><i></i>Terrain</button><button class="layer" data-layer="satellite"><i></i>Streets</button></div>
 </aside>
 <aside class="panel right">
   <div class="righthead"><span class="eyebrow">02 / FIELD NOTES</span><span class="pill">BETA</span></div>
@@ -118,7 +118,7 @@
     const layer=btn.dataset.layer;document.querySelectorAll('.layer').forEach(b=>b.classList.toggle('active',b===btn));currentLayer=layer;
     if(layer==='dark'){map.setStyle('https://tiles.openfreemap.org/styles/dark');map.once('style.load',()=>{try{map.setFog({color:'#080b12','high-color':'#17243c','space-color':'#03050a','star-intensity':0.28})}catch(e){}});toast('NIGHT LAYER ENABLED');}
     else if(layer==='terrain'){map.setStyle('https://tiles.openfreemap.org/styles/positron');toast('TERRAIN / LIGHT REFERENCE ENABLED');}
-    else{map.setStyle('https://tiles.openfreemap.org/styles/liberty');toast('SATELLITE-STYLE REFERENCE ENABLED');}
+    else{map.setStyle('https://tiles.openfreemap.org/styles/liberty');toast('STREET DETAIL LAYER ENABLED');}
   }));
   const moments=[
     ['THE FIRST CITIES','Indus cities & early trade routes'],
