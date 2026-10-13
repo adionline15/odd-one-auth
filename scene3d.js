@@ -149,7 +149,7 @@
 
         let raf = 0;
         let disposed = false;
-        let scrollRotation = 0;
+        let scrollRotation = -1.75;
         let lastFrameTime = 0;
         const clock = new THREE.Clock();
         const resize = () => {
@@ -174,7 +174,7 @@
           // Smoothly reveal India as the globe grows, rather than applying an arbitrary small turn.
           const focusProgress = scrollProgress * scrollProgress * (3 - 2 * scrollProgress);
           // India is near 78°E; target a front-facing longitude turn, not a full half-orbit.
-          const indiaTurn = focusProgress * 1.36;
+          const indiaTurn = -focusProgress * 1.75;
           scrollRotation += (indiaTurn - scrollRotation) * 0.045;
           pointer.x += (pointer.tx - pointer.x) * 0.035;
           pointer.y += (pointer.ty - pointer.y) * 0.035;
