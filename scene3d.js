@@ -149,29 +149,7 @@
       });
 
       const updateCityMarkers = () => {
-        const yaw = earthGroup.rotation.y;
-        const pitch = earthGroup.rotation.x;
-        const cy = Math.cos(yaw), sy = Math.sin(yaw);
-        const cx = Math.cos(pitch), sx = Math.sin(pitch);
-        cityMarkers.forEach((city) => {
-          const lat = city.lat * Math.PI / 180;
-          const lon = city.lon * Math.PI / 180;
-          const x = -Math.cos(lat) * Math.sin(lon);
-          const y = Math.sin(lat);
-          const z = Math.cos(lat) * Math.cos(lon);
-          const rx = x * cy + z * sy;
-          const rz = -x * sy + z * cy;
-          const ry = y * cx - rz * sx;
-          const front = y * sx + rz * cx;
-          city.label.style.left = `${50 + rx * 43}%`;
-          city.label.style.top = `${50 - ry * 43}%`;
-          city.label.style.transform = city.align === 'left'
-            ? `translate(calc(-100% - 8px + ${city.dx}px), calc(-50% + ${city.dy}px))`
-            : `translate(${city.dx}px, calc(-50% + ${city.dy}px))`;
-          city.label.style.display = front > 0.08 ? 'flex' : 'none';
-        });
         const closingProgress = Number(host.dataset.closingProgress || 0);
-        host.classList.toggle('show-city-markers', closingProgress > 0.28 || reducedMotion);
         camera.position.z = baseCameraZ - Math.min(1, Math.max(0, closingProgress)) * 0.62;
       };
 
@@ -300,7 +278,6 @@
           cancelAnimationFrame(raf);
           observer.disconnect();
           sceneVisibility.disconnect();
-          cityMarkers.forEach((city) => city.label.remove());
           host.removeEventListener('pointermove', onPointerMove);
           host.removeEventListener('pointerdown', onPointerDown);
           host.removeEventListener('pointerup', onPointerUp);
