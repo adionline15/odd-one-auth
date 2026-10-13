@@ -25,6 +25,7 @@
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
       camera.position.set(0, 0, 4.15);
+      const baseCameraZ = 4.15;
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1 : 1.25));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -132,7 +133,46 @@
         }));
         scene.add(stars);
 
-        const pointer = { x: 0, y: 0, down: false, lastX: 0, lastY: 0, lastInput: 0 };
+        const cityMarkers = [
+        { name: 'Delhi', lat: 28.6139, lon: 77.2090 },
+        { name: 'Mumbai', lat: 19.0760, lon: 72.8777 },
+        { name: 'Chennai', lat: 13.0827, lon: 80.2707 },
+        { name: 'Kolkata', lat: 22.5726, lon: 88.3639 },
+        { name: 'Bengaluru', lat: 12.9716, lon: 77.5946 }
+      ].map((city) => {
+        const label = document.createElement('span');
+        label.className = 'earth-city-marker';
+        label.textContent = city.name;
+        label.setAttribute('aria-hidden', 'true');
+        host.append(label);
+        return { ...city, label };
+      });
+
+      const updateCityMarkers = () => {
+        const yaw = earthGroup.rotation.y;
+        const pitch = earthGroup.rotation.x;
+        const cy = Math.cos(yaw), sy = Math.sin(yaw);
+        const cx = Math.cos(pitch), sx = Math.sin(pitch);
+        cityMarkers.forEach((city) => {
+          const lat = city.lat * Math.PI / 180;
+          const lon = city.lon * Math.PI / 180;
+          const x = -Math.cos(lat) * Math.sin(lon);
+          const y = Math.sin(lat);
+          const z = Math.cos(lat) * Math.cos(lon);
+          const rx = x * cy + z * sy;
+          const rz = -x * sy + z * cy;
+          const ry = y * cx - rz * sx;
+          const front = y * sx + rz * cx;
+          city.label.style.left = `${50 + rx * 43}%`;
+          city.label.style.top = `${50 - ry * 43}%`;
+          city.label.style.display = front > 0.08 ? 'flex' : 'none';
+        });
+        const closingProgress = Number(host.dataset.closingProgress || 0);
+        host.classList.toggle('show-city-markers', closingProgress > 0.28 && !reducedMotion);
+        camera.position.z = baseCameraZ - Math.min(1, Math.max(0, closingProgress)) * 0.24;
+      };
+
+      const pointer = { x: 0, y: 0, down: false, lastX: 0, lastY: 0, lastInput: 0 };
         const indiaYaw = 1.38;
         const indiaPitch = -0.08;
         const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -183,7 +223,7 @@
         const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
         const render = (now = 0) => {
           rafRunning = false;
-          if (disposed || document.hidden) return;
+          if (disposed || document.hidden || !sectionActive) return;
           rafRunning = true;
           raf = requestAnimationFrame(render);
           // Render at display rate on capable devices; no DOM reads or framework state updates per frame.
@@ -215,10 +255,30 @@
             clouds.rotation.x = earthGroup.rotation.x;
           }
           stars.rotation.y = reducedMotion ? 0 : elapsed * 0.00012;
+          updateCityMarkers();
           renderer.render(scene, camera);
         };
         host.classList.add('has-3d-earth');
         host.classList.remove('earth-css-fallback');
+        let sectionActive = true;
+        const heroSection = document.querySelector('.hero');
+        const closingSection = document.querySelector('.closing-section');
+        const sceneVisibility = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => { entry.target.dataset.earthVisible = entry.isIntersecting ? '1' : '0'; });
+          sectionActive = Boolean(
+            (heroSection && heroSection.dataset.earthVisible === '1') ||
+            (closingSection && closingSection.dataset.earthVisible === '1')
+          );
+          if (sectionActive && !document.hidden && !disposed && !rafRunning) {
+            lastFrameTime = 0;
+            raf = requestAnimationFrame(render);
+          } else if (!sectionActive) {
+            cancelAnimationFrame(raf);
+            rafRunning = false;
+          }
+        }, { threshold: 0.01 });
+        if (heroSection) sceneVisibility.observe(heroSection);
+        if (closingSection) sceneVisibility.observe(closingSection);
         resize();
         render();
 
@@ -226,7 +286,7 @@
           if (document.hidden) {
             cancelAnimationFrame(raf);
             rafRunning = false;
-          } else if (!disposed && !rafRunning) {
+          } else if (!disposed && sectionActive && !rafRunning) {
             lastFrameTime = 0;
             introStart = performance.now() - 2350;
             raf = requestAnimationFrame(render);
@@ -236,6 +296,8 @@
           disposed = true;
           cancelAnimationFrame(raf);
           observer.disconnect();
+          sceneVisibility.disconnect();
+          cityMarkers.forEach((city) => city.label.remove());
           host.removeEventListener('pointermove', onPointerMove);
           host.removeEventListener('pointerdown', onPointerDown);
           host.removeEventListener('pointerup', onPointerUp);
