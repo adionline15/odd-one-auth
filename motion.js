@@ -86,6 +86,21 @@
     root.style.setProperty("--hero-scroll", Math.min(scrollY / heroHeight, 1).toFixed(3));
     const journeyProgress = max > 0 ? Math.min(Math.max(scrollY / max, 0), 1) : 0;
     root.style.setProperty("--earth-scroll", journeyProgress.toFixed(3));
+
+    const closing = document.querySelector(".closing-section");
+    const closingRect = closing ? closing.getBoundingClientRect() : null;
+    const closingProgress = !reduceMotion && closingRect
+      ? Math.min(1, Math.max(0, (innerHeight - closingRect.top) / (innerHeight * 1.15))) : 0;
+    const heroProgress = hero ? Math.min(1, Math.max(0, scrollY / Math.max(1, heroHeight * .78))) : 1;
+    const earthOpacity = reduceMotion ? .88
+      : closingProgress > 0 ? .92 * closingProgress
+      : .92 * (1 - heroProgress);
+    root.style.setProperty("--earth-left", reduceMotion ? "72%" : `${4 + closingProgress * 68}%`);
+    root.style.setProperty("--earth-top", reduceMotion ? "58%" : `${52 + closingProgress * 6}%`);
+    root.style.setProperty("--earth-size", reduceMotion ? "min(64vw, 860px)" : `min(${66 - closingProgress * 4}vw, 900px)`);
+    root.style.setProperty("--earth-opacity", earthOpacity.toFixed(3));
+    const earth = document.querySelector(".world-globe");
+    if (earth) earth.dataset.closingProgress = closingProgress.toFixed(3);
     scrollRaf = 0;
   };
   window.addEventListener("scroll", () => {
