@@ -95,7 +95,8 @@
     const earthOpacity = reduceMotion ? .88
       : closingProgress > 0 ? .92 * closingProgress
       : .92 * (1 - heroProgress);
-    root.style.setProperty("--earth-left", reduceMotion ? "72%" : `${4 + closingProgress * 68}%`);
+    const earthStartLeft = innerWidth <= 920 ? 50 : 37;
+    root.style.setProperty("--earth-left", reduceMotion ? "72%" : `${earthStartLeft + closingProgress * (72 - earthStartLeft)}%`);
     root.style.setProperty("--earth-top", reduceMotion ? "58%" : `${52 + closingProgress * 6}%`);
     root.style.setProperty("--earth-size", reduceMotion ? "min(64vw, 860px)" : `min(${66 - closingProgress * 4}vw, 900px)`);
     root.style.setProperty("--earth-opacity", earthOpacity.toFixed(3));
