@@ -231,8 +231,12 @@ function updateCamera(immediate = false) {
     button.setAttribute("aria-pressed", active ? "true" : "false");
   });
   if (Math.abs(targetProgress - currentProgress) > 0.002 && !reducedMotion()) {
-    cameraFrame = requestAnimationFrame(() => updateCamera(false));
+    if (!cameraFrame) cameraFrame = requestAnimationFrame(() => {
+      cameraFrame = 0;
+      updateCamera(false);
+    });
   } else {
+    if (cameraFrame) cancelAnimationFrame(cameraFrame);
     cameraFrame = 0;
     currentProgress = targetProgress;
   }
