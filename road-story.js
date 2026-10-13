@@ -147,7 +147,10 @@ async function loadMapOnce() {
       mapHost.classList.add("map-ready");
       setStatus("Map ready · OpenFreeMap / OpenStreetMap", false);
       hideUnapprovedBaseBoundaries();
+      targetProgress = storyProgress();
+      currentProgress = targetProgress;
       updateCamera(true);
+      onScroll();
       console.info("[Odd-One] MapLibre GL JS", MAPLIBRE_VERSION, "loaded. Base map: OpenFreeMap Liberty.");
       console.info("[Odd-One] Official India boundary source: NOT CONFIGURED. Base boundary layers hidden; legal review required.");
     });
