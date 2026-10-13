@@ -438,3 +438,28 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
 .timeline-section, .closing-section {
   isolation: isolate;
 }
+
+
+/* Performance pass: avoid large blur filters and oversized GPU surfaces. */
+.world-globe,
+.world-globe.has-3d-earth {
+  filter: none !important;
+  box-shadow: 0 0 36px #2563eb18, inset -20px -8px 42px #01040b60 !important;
+  contain: layout paint style;
+}
+.world-globe {
+  transform: translate(-50%, -50%) scale(calc(.78 + var(--earth-scroll, 0) * .30)) !important;
+}
+@media (max-width: 920px) {
+  .world-globe {
+    transform: translate(-50%, -50%) scale(calc(.62 + var(--earth-scroll, 0) * .18)) !important;
+  }
+}
+@media (max-width: 620px) {
+  .world-globe {
+    transform: translate(-50%, -50%) scale(calc(.56 + var(--earth-scroll, 0) * .12)) !important;
+  }
+}
+.auth-panel {
+  backdrop-filter: blur(12px);
+}
