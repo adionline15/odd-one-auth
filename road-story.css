@@ -47,3 +47,17 @@ a{color:inherit}button{font:inherit}a:focus-visible,button:focus-visible{outline
 .maplibregl-ctrl-attrib{font-size:9px!important;background:#07101bd9!important;color:#c5d1e4!important}.maplibregl-ctrl-attrib a{color:#d9e5ff!important}.maplibregl-ctrl-group{background:#0b1422!important;border:1px solid #ffffff20!important}.maplibregl-ctrl-group button{filter:invert(.9)}
 @media(max-width:760px){.story-topbar{height:64px;padding:0 20px}.top-meta{display:none}.chapter{padding:100px 25px 74px}.chapter h1{font-size:clamp(51px,11.5vw,78px)}.chapter h2{font-size:clamp(48px,10vw,68px)}.chapter-copy{font-size:12px;max-width:340px}.world-globe{width:115vw;left:77vw;top:30vh;opacity:.58}.edge-shade{background:linear-gradient(90deg,#05070be8,#05070b91 62%,#05070b25),linear-gradient(0deg,#05070b91,transparent 42%,#05070b55)}.hero-coordinates{right:25px;bottom:12vh;font-size:8px}.map-chapter{padding:0;min-height:260vh}.map-frame{height:100svh;min-height:600px}.map-copy{left:25px;top:20vh;width:calc(100% - 50px)}.map-copy h2{font-size:clamp(46px,10vw,66px)}.map-readout{top:auto;right:22px;bottom:140px}.map-readout span{font-size:23px}.map-controls{top:auto;right:22px;bottom:91px}.boundary-notice{top:105px;right:16px;max-width:250px;font-size:7px}.map-status{top:65px;right:16px}.data-legend{right:22px;bottom:62px;font-size:7px}.map-vignette{background:linear-gradient(90deg,#05070bf0,#05070b99 60%,#05070b2a),linear-gradient(0deg,#05070b50,transparent 35%,#05070b20)}.chapter-nav{right:13px;gap:14px}.chapter-nav a span{display:none}.story-footer{left:20px;right:20px}.story-footer span:nth-child(2){display:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;scroll-snap-type:none}.chapter-nav i,.chapter-nav a span{transition:none}.world-globe{will-change:auto}}
+
+/* Handoff: map and hero share the India target, then the hero renderer is paused. */
+.world-globe{transition:opacity .72s ease}
+body.map-handoff-active .world-globe{opacity:0;pointer-events:none}
+.map-frame #map{opacity:0;transition:opacity .72s ease}
+.map-frame #map.map-ready{opacity:1}
+.map-static-fallback{position:absolute;inset:0;display:grid;place-items:center;padding:28px;background:radial-gradient(ellipse at 50% 30%,#142b49,#07101b 65%);color:#e8efff}
+.map-static-fallback>div{max-width:420px;border:1px solid #ffffff22;border-radius:14px;background:#07101bdc;padding:26px}
+.map-static-fallback span{font:8px "DM Mono",monospace;letter-spacing:1.5px;color:#a6bfff}
+.map-static-fallback h2{font-size:32px;letter-spacing:-1.5px;margin:14px 0}
+.map-static-fallback p{color:#a2aec1;font-size:12px;line-height:1.8}
+.map-static-fallback a{display:inline-block;margin-top:12px;color:#c7d6ff;font-size:11px}
+body.map-unavailable .map-status{background:#21180d;color:#f2d5a2;border-color:#f0b85b55}
+@media(prefers-reduced-motion:reduce){.world-globe,#map{transition:none!important}}
