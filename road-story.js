@@ -229,9 +229,9 @@ function updateCamera(immediate = false) {
   currentProgress = factor === 1 ? progress : lerp(currentProgress, progress, factor);
   const eased = cameraForProgress(currentProgress);
   try {
-    const desiredProjection = { type: eased.projection };
-    const currentType = map.getProjection()?.type;
-    if (currentType !== desiredProjection.type) map.setProjection(desiredProjection);
+    // Keep globe projection selected and let MapLibre perform its native
+    // globe-to-Mercator transition as the zoom increases; do not hard-switch
+    // projections at an arbitrary scroll threshold.
     map.jumpTo({
       center: eased.center,
       zoom: eased.zoom,
