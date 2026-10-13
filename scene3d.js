@@ -168,7 +168,7 @@
           city.label.style.display = front > 0.08 ? 'flex' : 'none';
         });
         const closingProgress = Number(host.dataset.closingProgress || 0);
-        host.classList.toggle('show-city-markers', closingProgress > 0.28 && !reducedMotion);
+        host.classList.toggle('show-city-markers', closingProgress > 0.28 || reducedMotion);
         camera.position.z = baseCameraZ - Math.min(1, Math.max(0, closingProgress)) * 0.24;
       };
 
