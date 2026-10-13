@@ -536,7 +536,7 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
 
 
 /* Closing chapter: the same Earth canvas travels into the final composition. */
-:root { --earth-left: 4%; --earth-top: 52%; --earth-size: min(66vw, 900px); --earth-opacity: .92; }
+:root { --earth-left: 37%; --earth-top: 52%; --earth-size: min(66vw, 900px); --earth-opacity: .92; }
 .world-globe {
   position: fixed !important; left: var(--earth-left) !important; top: var(--earth-top) !important;
   width: var(--earth-size) !important; opacity: var(--earth-opacity) !important;
