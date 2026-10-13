@@ -133,21 +133,6 @@
         }));
         scene.add(stars);
 
-        const cityMarkers = [
-        { name: 'Delhi', lat: 28.6139, lon: 77.2090, dx: 10, dy: -10 },
-        { name: 'Mumbai', lat: 19.0760, lon: 72.8777, dx: 10, dy: 4 },
-        { name: 'Chennai', lat: 13.0827, lon: 80.2707, dx: -12, dy: 15, align: 'left' },
-        { name: 'Kolkata', lat: 22.5726, lon: 88.3639, dx: 12, dy: -2 },
-        { name: 'Bengaluru', lat: 12.9716, lon: 77.5946, dx: 12, dy: 24 }
-      ].map((city) => {
-        const label = document.createElement('span');
-        label.className = 'earth-city-marker';
-        label.textContent = city.name;
-        label.setAttribute('aria-hidden', 'true');
-        host.append(label);
-        return { ...city, label };
-      });
-
       const updateCityMarkers = () => {
         const closingProgress = Number(host.dataset.closingProgress || 0);
         camera.position.z = baseCameraZ - Math.min(1, Math.max(0, closingProgress)) * 0.62;
