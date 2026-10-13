@@ -163,9 +163,12 @@
           if (disposed || document.hidden) return;
           raf = requestAnimationFrame(render);
           const t = clock.getElapsedTime();
-          const scrollProgress = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--earth-scroll')) || 0;
-          const indiaTurn = scrollProgress * 1.22;
-          scrollRotation += (indiaTurn - scrollRotation) * 0.035;
+          const scrollProgress = Math.min(1, Math.max(0, Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--earth-scroll')) || 0));
+          // The Three.js Earth texture places India's longitude ~168 degrees away from the camera-facing meridian.
+          // Smoothly reveal India as the globe grows, rather than applying an arbitrary small turn.
+          const focusProgress = scrollProgress * scrollProgress * (3 - 2 * scrollProgress);
+          const indiaTurn = focusProgress * 2.93;
+          scrollRotation += (indiaTurn - scrollRotation) * 0.045;
           pointer.x += (pointer.tx - pointer.x) * 0.035;
           pointer.y += (pointer.ty - pointer.y) * 0.035;
           if (!pointer.down) earth.rotation.y += 0.0018;
