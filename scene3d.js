@@ -133,7 +133,7 @@
         scene.add(stars);
 
         const pointer = { x: 0, y: 0, down: false, lastX: 0, lastY: 0, lastInput: 0 };
-        const indiaYaw = Math.PI;
+        const indiaYaw = 1.38;
         const indiaPitch = -0.08;
         const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
         const onPointerMove = (event) => {
@@ -207,9 +207,6 @@
               const targetPitch = indiaPitch + driftPitch;
               earthGroup.rotation.y += (targetYaw - earthGroup.rotation.y) * 0.018;
               earthGroup.rotation.x += (targetPitch - earthGroup.rotation.x) * 0.018;
-            } else if (pointer.lastInput) {
-              earthGroup.rotation.y += (indiaYaw - earthGroup.rotation.y) * 0.012;
-              earthGroup.rotation.x += (indiaPitch - earthGroup.rotation.x) * 0.012;
             }
           }
           const clouds = earthGroup.userData.clouds;
