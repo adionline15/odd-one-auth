@@ -96,9 +96,9 @@
       : closingProgress > 0 ? .92 * Math.min(1, closingProgress * 2.6)
       : .92 * (1 - heroProgress);
     const earthStartLeft = innerWidth <= 920 ? 50 : 37;
-    root.style.setProperty("--earth-left", reduceMotion ? "72%" : `${earthStartLeft + closingProgress * (72 - earthStartLeft)}%`);
-    root.style.setProperty("--earth-top", reduceMotion ? "58%" : `${52 + closingProgress * 6}%`);
-    root.style.setProperty("--earth-size", reduceMotion ? "min(64vw, 860px)" : `min(${66 - closingProgress * 4}vw, 900px)`);
+    root.style.setProperty("--earth-x", `${reduceMotion ? 72 : earthStartLeft + closingProgress * (72 - earthStartLeft)}vw`);
+    root.style.setProperty("--earth-y", `${reduceMotion ? 58 : 52 + closingProgress * 6}vh`);
+    
     root.style.setProperty("--earth-opacity", earthOpacity.toFixed(3));
     // Make the scale visibly track the journey: compact during the timeline, larger in the final chapter.
     const scale = reduceMotion ? 1 : 0.74 + journeyProgress * 0.62 + closingProgress * 0.18;
