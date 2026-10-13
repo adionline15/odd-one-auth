@@ -15,6 +15,21 @@ const readout = {
   subtitle: document.querySelector("#readout-subtitle")
 };
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+const earthProgress = document.querySelector("#earth-progress-bar");
+const earthProgressLabel = document.querySelector("#earth-progress-label");
+const earthProgressDetail = document.querySelector("#earth-progress-detail");
+const earthPreloader = document.querySelector("#earth-preloader");
+document.addEventListener("oddone:textureprogress", event => {
+  const detail = event.detail || {};
+  if (earthProgress) earthProgress.style.width = Math.min(100, detail.percent || 0) + "%";
+  if (earthProgressLabel) earthProgressLabel.textContent = detail.percent >= 99.5 ? "Earth textures ready" : "Loading " + (detail.asset || "Earth textures");
+  if (earthProgressDetail) earthProgressDetail.textContent = Math.round(detail.loadedBytes || 0).toLocaleString() + " / " + Math.round(detail.totalBytes || 0).toLocaleString() + " bytes";
+  if (detail.percent >= 99.5 && earthPreloader) {
+    earthPreloader.classList.add("is-complete");
+    window.setTimeout(() => earthPreloader.classList.add("is-hidden"), reducedMotionQuery.matches ? 0 : 650);
+  }
+});
+
 let maplibre = null;
 let map = null;
 let mapReady = false;
