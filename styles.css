@@ -473,3 +473,39 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
 .topnav a:hover, .topnav a:focus-visible { color: #fff; text-decoration: underline; text-decoration-color: #60a5fa; text-underline-offset: 6px; }
 .submit { background: linear-gradient(110deg, #2563eb, #3b82f6 52%, #60a5fa) !important; color: #fff !important; border-color: #60a5fa !important; box-shadow: 0 8px 24px #2563eb2e; }
 @media (min-width: 921px) { .hero-copy { max-width: 430px; } .hero-intro { max-width: 310px; } }
+
+
+/* Final hierarchy and contrast pass */
+.world-globe {
+  left: 42% !important;
+}
+@media (max-width: 920px) {
+  .world-globe { left: 50% !important; }
+}
+.auth-index,
+.auth-panel-head,
+.auth-panel-foot,
+.terms,
+.secure,
+.eyebrow {
+  color: #c4cedd !important;
+  opacity: 1 !important;
+}
+.auth-index { letter-spacing: .12em; }
+.eyebrow { color: #d0d9e8 !important; }
+.auth-card input::placeholder { color: #b0bdce !important; opacity: 1; }
+.auth-panel {
+  background: linear-gradient(145deg, #07101df5, #050a13fa) !important;
+  border-color: #6b9edb55 !important;
+}
+.hero-copy::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -10% -16% -12% -8%;
+  background: radial-gradient(ellipse at 35% 50%, #05070be8 0%, #05070bbd 54%, transparent 100%);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-globe { transition: none !important; }
+}
