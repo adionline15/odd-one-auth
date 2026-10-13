@@ -85,6 +85,7 @@ function hasWebGL2() {
 
 function setChapterActive(id) {
   lastChapter = id;
+  document.body.classList.toggle("story-map-active", id !== "earth");
   chapters.forEach((section, i) => {
     const active = section.id === id;
     section.dataset.active = active ? "true" : "false";
