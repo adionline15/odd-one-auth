@@ -158,17 +158,20 @@
           pointer.lastX = event.clientX;
           pointer.lastY = event.clientY;
           pointer.lastInput = performance.now();
+          motionActiveUntil = performance.now() + 900;
         };
         const onPointerDown = event => {
           pointer.down = true;
           pointer.lastX = event.clientX;
           pointer.lastY = event.clientY;
           pointer.lastInput = performance.now();
+          motionActiveUntil = performance.now() + 900;
           if (host.setPointerCapture) host.setPointerCapture(event.pointerId);
         };
         const onPointerUp = () => {
           pointer.down = false;
           pointer.lastInput = performance.now();
+          motionActiveUntil = performance.now() + 900;
         };
         host.addEventListener("pointermove", onPointerMove, { passive: true });
         host.addEventListener("pointerdown", onPointerDown, { passive: true });
@@ -182,6 +185,8 @@
         let lastFrameTime = 0;
         let introStart = 0;
         let sectionActive = true;
+        let heroPaused = false;
+        let motionActiveUntil = 0;
         const clock = new THREE.Clock();
 
         const resize = () => {
@@ -203,11 +208,13 @@
 
         const render = now => {
           rafRunning = false;
-          if (disposed || document.hidden || !sectionActive) return;
+          if (disposed || document.hidden || !sectionActive || heroPaused) return;
           rafRunning = true;
           raf = requestAnimationFrame(render);
-          // Follow the browser's refresh cadence; avoid the artificial 45fps cap.
-          if (now - lastFrameTime < 15.5) return;
+          // 60 FPS during intro/drag easing, 30 FPS while idle.
+          const activeMotion = pointer.down || now < motionActiveUntil || (!reducedMotion && introStart && now - introStart < 2350);
+          const frameInterval = activeMotion ? (1000 / 60) : (1000 / 30);
+          if (now - lastFrameTime < frameInterval) return;
           lastFrameTime = now;
 
           const elapsed = clock.getElapsedTime();
@@ -241,6 +248,17 @@
 
         host.classList.add("has-3d-earth");
         host.classList.remove("earth-css-fallback");
+        const onEarthPause = event => {
+          heroPaused = Boolean(event.detail?.paused);
+          if (heroPaused) {
+            cancelAnimationFrame(raf);
+            rafRunning = false;
+          } else if (!disposed && sectionActive && !document.hidden && !rafRunning) {
+            lastFrameTime = 0;
+            raf = requestAnimationFrame(render);
+          }
+        };
+        document.addEventListener("oddone:pauseEarth", onEarthPause);
         const heroSection = document.querySelector(".hero");
         const closingSection = document.querySelector(".closing-section");
         const sceneVisibility = new IntersectionObserver(entries => {
@@ -249,7 +267,7 @@
             (heroSection && heroSection.dataset.earthVisible === "1") ||
             (closingSection && closingSection.dataset.earthVisible === "1")
           );
-          if (sectionActive && !document.hidden && !disposed && !rafRunning) {
+          if (sectionActive && !document.hidden && !disposed && !heroPaused && !rafRunning) {
             lastFrameTime = 0;
             raf = requestAnimationFrame(render);
           } else if (!sectionActive) {
@@ -267,7 +285,7 @@
           if (document.hidden) {
             cancelAnimationFrame(raf);
             rafRunning = false;
-          } else if (!disposed && sectionActive && !rafRunning) {
+          } else if (!disposed && sectionActive && !heroPaused && !rafRunning) {
             lastFrameTime = 0;
             introStart = performance.now() - 2350;
             raf = requestAnimationFrame(render);
@@ -281,6 +299,7 @@
           resizeObserver.disconnect();
           sceneVisibility.disconnect();
           document.removeEventListener("visibilitychange", onVisibilityChange);
+          document.removeEventListener("oddone:pauseEarth", onEarthPause);
           host.removeEventListener("pointermove", onPointerMove);
           host.removeEventListener("pointerdown", onPointerDown);
           host.removeEventListener("pointerup", onPointerUp);
