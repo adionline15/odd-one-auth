@@ -68,8 +68,12 @@
           const bytes = new Uint8Array(binary.length);
           for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
           const mime = asset.path.endsWith(".png.b64") ? "image/png" : "image/jpeg";
-          const bitmap = await createImageBitmap(new Blob([bytes], { type: mime }));
-          const texture = new THREE.Texture(bitmap);
+          const objectUrl = URL.createObjectURL(new Blob([bytes], { type: mime }));
+          const image = new Image();
+          image.src = objectUrl;
+          await image.decode();
+          URL.revokeObjectURL(objectUrl);
+          const texture = new THREE.Texture(image);
           texture.colorSpace = asset.color ? THREE.SRGBColorSpace : THREE.NoColorSpace;
           texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
           texture.wrapS = THREE.RepeatWrapping;
@@ -207,7 +211,7 @@
         let lastFrameTime = 0;
         let introStart = 0;
         let sectionActive = true;
-        let heroPaused = false;
+        let heroPaused = document.body.classList.contains("map-handoff-active");
         let motionActiveUntil = 0;
         const clock = new THREE.Clock();
 
