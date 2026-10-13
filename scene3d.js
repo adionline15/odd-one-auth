@@ -23,6 +23,7 @@
       } catch (_) {
         canvas.remove();
         host.classList.add("earth-css-fallback");
+        document.dispatchEvent(new CustomEvent("oddone:earthready", { detail: { fallback: true, failedAssets: 4 } }));
         return;
       }
 
@@ -53,10 +54,22 @@
       ];
       const expectedTextureBytes = textureAssets.reduce((sum, asset) => sum + asset.encodedBytes, 0);
       let loadedTextureBytes = 0;
-      const publishTextureProgress = (asset, bytes) => {
+      let completedTextureAssets = 0;
+      let failedTextureAssets = 0;
+      const publishTextureProgress = (asset, bytes, failed = false) => {
         loadedTextureBytes += bytes;
+        completedTextureAssets++;
+        if (failed) failedTextureAssets++;
         document.dispatchEvent(new CustomEvent("oddone:textureprogress", {
-          detail: { loadedBytes: loadedTextureBytes, totalBytes: expectedTextureBytes, asset, percent: Math.min(100, loadedTextureBytes / expectedTextureBytes * 100) }
+          detail: {
+            loadedBytes: loadedTextureBytes,
+            totalBytes: expectedTextureBytes,
+            completedAssets: completedTextureAssets,
+            assetCount: textureAssets.length,
+            failedAssets: failedTextureAssets,
+            asset,
+            percent: Math.min(100, loadedTextureBytes / expectedTextureBytes * 100)
+          }
         }));
       };
       const loadTexture = async (asset) => {
@@ -84,7 +97,7 @@
           return texture;
         } catch (error) {
           console.warn("[Odd-One] Local Earth texture unavailable:", asset.path, error);
-          publishTextureProgress(asset.label + " (unavailable)", 0);
+          publishTextureProgress(asset.label + " (unavailable)", 0, true);
           return null;
         }
       };
@@ -297,6 +310,9 @@
 
         host.classList.add("has-3d-earth");
         host.classList.remove("earth-css-fallback");
+        document.dispatchEvent(new CustomEvent("oddone:earthready", {
+          detail: { fallback: false, loadedBytes: loadedTextureBytes, totalBytes: expectedTextureBytes, failedAssets: failedTextureAssets }
+        }));
         const onEarthPause = event => {
           heroPaused = Boolean(event.detail?.paused);
           if (heroPaused) {
@@ -308,8 +324,11 @@
           }
         };
         document.addEventListener("oddone:pauseEarth", onEarthPause);
-        const heroSection = document.querySelector(".hero");
-        const closingSection = document.body.classList.contains("road-story") ? null : document.querySelector(".closing-section");
+        // The login page has one stage; the separate road-story uses chapter sections.
+        const heroSection = document.body.classList.contains("road-story")
+          ? document.querySelector(".hero")
+          : document.querySelector(".login-stage");
+        const closingSection = document.body.classList.contains("road-story") ? document.querySelector(".closing-section") : null;
         const sceneVisibility = new IntersectionObserver(entries => {
           entries.forEach(entry => { entry.target.dataset.earthVisible = entry.isIntersecting ? "1" : "0"; });
           sectionActive = Boolean(
@@ -372,5 +391,6 @@
     .catch(() => {
       canvas.remove();
       host.classList.add("earth-css-fallback");
+      document.dispatchEvent(new CustomEvent("oddone:earthready", { detail: { fallback: true, failedAssets: 4 } }));
     });
 })();
