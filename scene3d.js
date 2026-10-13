@@ -1,35 +1,39 @@
 (() => {
-  const host = document.querySelector('.world-globe');
+  const host = document.querySelector(".world-globe");
   if (!host) return;
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const canvas = document.createElement('canvas');
-  canvas.className = 'earth-webgl';
-  canvas.setAttribute('aria-hidden', 'true');
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const canvas = document.createElement("canvas");
+  canvas.className = "earth-webgl";
+  canvas.setAttribute("aria-hidden", "true");
   host.prepend(canvas);
 
-  import('https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js')
-    .then((THREE) => {
+  import("https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js")
+    .then(THREE => {
       if (!canvas.isConnected) return;
+
       let renderer;
       try {
         renderer = new THREE.WebGLRenderer({
-          canvas, alpha: true, antialias: true, powerPreference: 'high-performance'
+          canvas,
+          alpha: true,
+          antialias: true,
+          powerPreference: "high-performance"
         });
       } catch (_) {
         canvas.remove();
-        host.classList.add('earth-css-fallback');
+        host.classList.add("earth-css-fallback");
         return;
       }
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
-      camera.position.set(0, 0, 4.15);
       const baseCameraZ = 4.15;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1));
+      camera.position.set(0, 0, baseCameraZ);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1 : 1.25));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.18;
+      renderer.toneMappingExposure = 1.12;
 
       scene.add(new THREE.AmbientLight(0xb7c9df, 0.48));
       const sun = new THREE.DirectionalLight(0xffffff, 2.25);
@@ -42,8 +46,8 @@
       const earthGroup = new THREE.Group();
       scene.add(earthGroup);
       const loader = new THREE.TextureLoader();
-      const loadTexture = (url, colorMap = false) => new Promise((resolve) => {
-        loader.load(url, (texture) => {
+      const loadTexture = (url, colorMap = false) => new Promise(resolve => {
+        loader.load(url, texture => {
           texture.colorSpace = colorMap ? THREE.SRGBColorSpace : THREE.NoColorSpace;
           texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
           texture.wrapS = THREE.RepeatWrapping;
@@ -57,10 +61,10 @@
       });
 
       Promise.all([
-        loadTexture('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', true),
-        loadTexture('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg'),
-        loadTexture('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg'),
-        loadTexture('https://threejs.org/examples/textures/planets/earth_clouds_1024.png', true)
+        loadTexture("https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg", true),
+        loadTexture("https://threejs.org/examples/textures/planets/earth_normal_2048.jpg"),
+        loadTexture("https://threejs.org/examples/textures/planets/earth_specular_2048.jpg"),
+        loadTexture("https://threejs.org/examples/textures/planets/earth_clouds_1024.png", true)
       ]).then(([colorMap, normalMap, specularMap, cloudMap]) => {
         if (!canvas.isConnected) return;
 
@@ -73,16 +77,20 @@
           specular: new THREE.Color(0x182c40),
           shininess: 8
         });
-        const earth = new THREE.Mesh(new THREE.SphereGeometry(1.43, 64, 64), earthMaterial);
+        const earth = new THREE.Mesh(new THREE.SphereGeometry(1.43, 80, 80), earthMaterial);
         earth.rotation.z = -0.12;
         earthGroup.add(earth);
 
         if (cloudMap) {
           const clouds = new THREE.Mesh(
-            new THREE.SphereGeometry(1.455, 48, 48),
+            new THREE.SphereGeometry(1.455, 56, 56),
             new THREE.MeshPhongMaterial({
-              map: cloudMap, transparent: true, opacity: 0.32,
-              color: 0xe8edf5, depthWrite: false, blending: THREE.NormalBlending
+              map: cloudMap,
+              transparent: true,
+              opacity: 0.3,
+              color: 0xe8edf5,
+              depthWrite: false,
+              blending: THREE.NormalBlending
             })
           );
           clouds.rotation.z = -0.12;
@@ -91,7 +99,7 @@
         }
 
         const atmosphere = new THREE.Mesh(
-          new THREE.SphereGeometry(1.56, 48, 48),
+          new THREE.SphereGeometry(1.56, 56, 56),
           new THREE.ShaderMaterial({
             vertexShader: `
               varying vec3 vNormal;
@@ -127,22 +135,21 @@
           starPositions[i * 3 + 2] = -1.2 - Math.random() * 4;
         }
         const starGeometry = new THREE.BufferGeometry();
-        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        starGeometry.setAttribute("position", new THREE.BufferAttribute(starPositions, 3));
         const stars = new THREE.Points(starGeometry, new THREE.PointsMaterial({
-          color: 0x9ccaff, size: 0.012, transparent: true, opacity: 0.42
+          color: 0x9ccaff,
+          size: 0.012,
+          transparent: true,
+          opacity: 0.42
         }));
         scene.add(stars);
 
-      const updateCityMarkers = () => {
-        const closingProgress = Number(host.dataset.closingProgress || 0);
-        camera.position.z = baseCameraZ - Math.min(1, Math.max(0, closingProgress)) * 0.62;
-      };
-
-      const pointer = { x: 0, y: 0, down: false, lastX: 0, lastY: 0, lastInput: 0 };
+        const pointer = { x: 0, y: 0, down: false, lastX: 0, lastY: 0, lastInput: 0 };
         const indiaYaw = 1.38;
         const indiaPitch = -0.08;
         const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-        const onPointerMove = (event) => {
+
+        const onPointerMove = event => {
           if (!pointer.down) return;
           const dx = event.clientX - pointer.lastX;
           const dy = event.clientY - pointer.lastY;
@@ -152,88 +159,95 @@
           pointer.lastY = event.clientY;
           pointer.lastInput = performance.now();
         };
-        const onPointerDown = (event) => {
+        const onPointerDown = event => {
           pointer.down = true;
           pointer.lastX = event.clientX;
           pointer.lastY = event.clientY;
           pointer.lastInput = performance.now();
-          host.setPointerCapture?.(event.pointerId);
+          if (host.setPointerCapture) host.setPointerCapture(event.pointerId);
         };
         const onPointerUp = () => {
           pointer.down = false;
           pointer.lastInput = performance.now();
         };
-        host.addEventListener('pointermove', onPointerMove, { passive: true });
-        host.addEventListener('pointerdown', onPointerDown, { passive: true });
-        host.addEventListener('pointerup', onPointerUp, { passive: true });
-        host.addEventListener('pointercancel', onPointerUp, { passive: true });
-        host.addEventListener('pointerleave', onPointerUp, { passive: true });
+        host.addEventListener("pointermove", onPointerMove, { passive: true });
+        host.addEventListener("pointerdown", onPointerDown, { passive: true });
+        host.addEventListener("pointerup", onPointerUp, { passive: true });
+        host.addEventListener("pointercancel", onPointerUp, { passive: true });
+        host.addEventListener("pointerleave", onPointerUp, { passive: true });
 
         let raf = 0;
         let disposed = false;
+        let rafRunning = false;
         let lastFrameTime = 0;
         let introStart = 0;
-        let lastTime = 0;
-        let rafRunning = false;
+        let sectionActive = true;
         const clock = new THREE.Clock();
+
         const resize = () => {
           if (disposed) return;
-          const w = Math.max(1, host.clientWidth);
-          const h = Math.max(1, host.clientHeight);
-          camera.aspect = w / h;
+          const width = Math.max(1, host.clientWidth);
+          const height = Math.max(1, host.clientHeight);
+          camera.aspect = width / height;
           camera.updateProjectionMatrix();
-          renderer.setSize(w, h, false);
+          renderer.setSize(width, height, false);
         };
-        const observer = new ResizeObserver(resize);
-        observer.observe(host);
-        const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
-        const render = (now = 0) => {
+        const resizeObserver = new ResizeObserver(resize);
+        resizeObserver.observe(host);
+
+        const updateCamera = () => {
+          const closingProgress = Number(host.dataset.closingProgress || 0);
+          camera.position.z = baseCameraZ - clamp(closingProgress) * 0.62;
+        };
+        const easeOutCubic = value => 1 - Math.pow(1 - value, 3);
+
+        const render = now => {
           rafRunning = false;
           if (disposed || document.hidden || !sectionActive) return;
           rafRunning = true;
           raf = requestAnimationFrame(render);
-          // Render at display rate on capable devices; no DOM reads or framework state updates per frame.
-          const frameInterval = 1000 / 45;
-          if (now - lastFrameTime < frameInterval) return;
+          // Follow the browser's refresh cadence; avoid the artificial 45fps cap.
+          if (now - lastFrameTime < 15.5) return;
           lastFrameTime = now;
+
           const elapsed = clock.getElapsedTime();
           if (!introStart) introStart = now;
-          const introProgress = reducedMotion ? 1 : clamp((now - introStart) / 2350, 0, 1);
+          const introProgress = reducedMotion ? 1 : clamp((now - introStart) / 2350);
           const eased = easeOutCubic(introProgress);
           const idleFor = pointer.lastInput ? now - pointer.lastInput : Infinity;
+
           if (!pointer.down) {
             if (introProgress < 1) {
               earthGroup.rotation.y = indiaYaw - (1 - eased) * Math.PI * 2;
               earthGroup.rotation.x = indiaPitch;
-            } else if (idleFor > 3600) {
+            } else if (!reducedMotion && idleFor > 3600) {
               const driftTime = (now - introStart - 2350) / 1000;
-              const driftYaw = reducedMotion ? 0 : Math.sin(driftTime * 0.22) * (8 * Math.PI / 180);
-              const driftPitch = reducedMotion ? 0 : Math.sin(driftTime * 0.16) * (3 * Math.PI / 180);
-              const targetYaw = indiaYaw + driftYaw;
-              const targetPitch = indiaPitch + driftPitch;
-              earthGroup.rotation.y += (targetYaw - earthGroup.rotation.y) * 0.018;
-              earthGroup.rotation.x += (targetPitch - earthGroup.rotation.x) * 0.018;
+              const driftYaw = Math.sin(driftTime * 0.22) * (8 * Math.PI / 180);
+              const driftPitch = Math.sin(driftTime * 0.16) * (3 * Math.PI / 180);
+              earthGroup.rotation.y += (indiaYaw + driftYaw - earthGroup.rotation.y) * 0.018;
+              earthGroup.rotation.x += (indiaPitch + driftPitch - earthGroup.rotation.x) * 0.018;
             }
           }
+
           const clouds = earthGroup.userData.clouds;
           if (clouds) {
             clouds.rotation.y = earthGroup.rotation.y + (reducedMotion ? 0 : elapsed * 0.00006);
             clouds.rotation.x = earthGroup.rotation.x;
           }
           stars.rotation.y = reducedMotion ? 0 : elapsed * 0.00012;
-          updateCityMarkers();
+          updateCamera();
           renderer.render(scene, camera);
         };
-        host.classList.add('has-3d-earth');
-        host.classList.remove('earth-css-fallback');
-        let sectionActive = true;
-        const heroSection = document.querySelector('.hero');
-        const closingSection = document.querySelector('.closing-section');
-        const sceneVisibility = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => { entry.target.dataset.earthVisible = entry.isIntersecting ? '1' : '0'; });
+
+        host.classList.add("has-3d-earth");
+        host.classList.remove("earth-css-fallback");
+        const heroSection = document.querySelector(".hero");
+        const closingSection = document.querySelector(".closing-section");
+        const sceneVisibility = new IntersectionObserver(entries => {
+          entries.forEach(entry => { entry.target.dataset.earthVisible = entry.isIntersecting ? "1" : "0"; });
           sectionActive = Boolean(
-            (heroSection && heroSection.dataset.earthVisible === '1') ||
-            (closingSection && closingSection.dataset.earthVisible === '1')
+            (heroSection && heroSection.dataset.earthVisible === "1") ||
+            (closingSection && closingSection.dataset.earthVisible === "1")
           );
           if (sectionActive && !document.hidden && !disposed && !rafRunning) {
             lastFrameTime = 0;
@@ -245,10 +259,11 @@
         }, { threshold: 0.01 });
         if (heroSection) sceneVisibility.observe(heroSection);
         if (closingSection) sceneVisibility.observe(closingSection);
-        resize();
-        render();
 
-        document.addEventListener('visibilitychange', () => {
+        resize();
+        raf = requestAnimationFrame(render);
+
+        const onVisibilityChange = () => {
           if (document.hidden) {
             cancelAnimationFrame(raf);
             rafRunning = false;
@@ -257,23 +272,27 @@
             introStart = performance.now() - 2350;
             raf = requestAnimationFrame(render);
           }
-        });
-        window.addEventListener('pagehide', () => {
+        };
+        document.addEventListener("visibilitychange", onVisibilityChange);
+
+        window.addEventListener("pagehide", () => {
           disposed = true;
           cancelAnimationFrame(raf);
-          observer.disconnect();
+          resizeObserver.disconnect();
           sceneVisibility.disconnect();
-          host.removeEventListener('pointermove', onPointerMove);
-          host.removeEventListener('pointerdown', onPointerDown);
-          host.removeEventListener('pointerup', onPointerUp);
-          host.removeEventListener('pointercancel', onPointerUp);
-          earthGroup.traverse((obj) => {
-            obj.geometry?.dispose();
-            if (obj.material) {
-              const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
-              materials.forEach((mat) => {
-                Object.values(mat).forEach((value) => { if (value?.isTexture) value.dispose(); });
-                mat.dispose();
+          document.removeEventListener("visibilitychange", onVisibilityChange);
+          host.removeEventListener("pointermove", onPointerMove);
+          host.removeEventListener("pointerdown", onPointerDown);
+          host.removeEventListener("pointerup", onPointerUp);
+          host.removeEventListener("pointercancel", onPointerUp);
+          host.removeEventListener("pointerleave", onPointerUp);
+          earthGroup.traverse(object => {
+            object.geometry?.dispose();
+            if (object.material) {
+              const materials = Array.isArray(object.material) ? object.material : [object.material];
+              materials.forEach(material => {
+                Object.values(material).forEach(value => { if (value?.isTexture) value.dispose(); });
+                material.dispose();
               });
             }
           });
@@ -284,6 +303,6 @@
     })
     .catch(() => {
       canvas.remove();
-      host.classList.add('earth-css-fallback');
+      host.classList.add("earth-css-fallback");
     });
 })();
