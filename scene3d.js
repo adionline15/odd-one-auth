@@ -29,39 +29,41 @@
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.18;
 
-      scene.add(new THREE.AmbientLight(0x9bbce8, 1.15));
-      const sun = new THREE.DirectionalLight(0xffffff, 3.1);
+      scene.add(new THREE.AmbientLight(0xb7c9df, 0.48));
+      const sun = new THREE.DirectionalLight(0xffffff, 2.25);
       sun.position.set(-3.5, 2.6, 4.5);
       scene.add(sun);
-      const blueFill = new THREE.DirectionalLight(0x347bff, 1.5);
-      blueFill.position.set(4, -1, 2);
-      scene.add(blueFill);
+      const nightFill = new THREE.DirectionalLight(0x29476d, 0.28);
+      nightFill.position.set(4, -1, -3);
+      scene.add(nightFill);
 
       const earthGroup = new THREE.Group();
       scene.add(earthGroup);
       const loader = new THREE.TextureLoader();
-      const loadTexture = (url) => new Promise((resolve) => {
+      const loadTexture = (url, colorMap = false) => new Promise((resolve) => {
         loader.load(url, (texture) => {
-          texture.colorSpace = THREE.SRGBColorSpace;
+          texture.colorSpace = colorMap ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+          texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
           resolve(texture);
         }, undefined, () => resolve(null));
       });
 
       Promise.all([
-        loadTexture('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg'),
+        loadTexture('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', true),
         loadTexture('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg'),
         loadTexture('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg'),
-        loadTexture('https://threejs.org/examples/textures/planets/earth_clouds_1024.png')
+        loadTexture('https://threejs.org/examples/textures/planets/earth_clouds_1024.png', true)
       ]).then(([colorMap, normalMap, specularMap, cloudMap]) => {
         if (!canvas.isConnected) return;
 
         const earthMaterial = new THREE.MeshPhongMaterial({
-          color: 0xffffff,
+          color: 0xf4f6fa,
           map: colorMap || null,
           normalMap: normalMap || null,
+          normalScale: new THREE.Vector2(0.62, 0.62),
           specularMap: specularMap || null,
-          specular: new THREE.Color(0x2f79d8),
-          shininess: 18
+          specular: new THREE.Color(0x182c40),
+          shininess: 8
         });
         const earth = new THREE.Mesh(new THREE.SphereGeometry(1.43, 64, 64), earthMaterial);
         earth.rotation.z = -0.12;
@@ -71,8 +73,8 @@
           const clouds = new THREE.Mesh(
             new THREE.SphereGeometry(1.455, 48, 48),
             new THREE.MeshPhongMaterial({
-              map: cloudMap, transparent: true, opacity: 0.22,
-              depthWrite: false, blending: THREE.AdditiveBlending
+              map: cloudMap, transparent: true, opacity: 0.32,
+              color: 0xe8edf5, depthWrite: false, blending: THREE.NormalBlending
             })
           );
           clouds.rotation.z = -0.12;
@@ -98,10 +100,10 @@
               varying vec3 vViewPosition;
               void main() {
                 float rim = pow(1.0 - max(dot(normalize(vNormal), normalize(vViewPosition)), 0.0), 2.4);
-                gl_FragColor = vec4(0.16, 0.48, 1.0, rim * 0.82);
+                gl_FragColor = vec4(0.22, 0.43, 0.72, rim * 0.34);
               }
             `,
-            blending: THREE.AdditiveBlending,
+            blending: THREE.NormalBlending,
             side: THREE.BackSide,
             transparent: true,
             depthWrite: false
