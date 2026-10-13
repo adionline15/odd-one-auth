@@ -73,3 +73,6 @@ body.map-unavailable .map-status{background:#21180d;color:#f2d5a2;border-color:#
 .earth-preloader.is-hidden{opacity:0;transform:translateY(8px)}
 @media(max-width:760px){.earth-preloader{left:20px;bottom:48px;width:min(260px,calc(100vw - 40px))}.story-footer span:nth-child(2){display:none}}
 @media(prefers-reduced-motion:reduce){.earth-preloader,.preloader-track i{transition:none}}
+
+body.story-map-active .world-globe{opacity:0;pointer-events:none}
+body:not(.story-map-active) .world-globe{opacity:.94;pointer-events:auto}
