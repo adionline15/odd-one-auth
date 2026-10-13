@@ -46,10 +46,10 @@
       const earthGroup = new THREE.Group();
       scene.add(earthGroup);
       const textureAssets = [
-        { path: "assets/earth/earth-color.jpg.b64", color: true, label: "Earth colour", encodedBytes: 512606 },
-        { path: "assets/earth/earth-normal.jpg.b64", color: false, label: "Earth normal", encodedBytes: 336774 },
-        { path: "assets/earth/earth-specular.jpg.b64", color: false, label: "Earth specular", encodedBytes: 223421 },
-        { path: "assets/earth/earth-clouds.png.b64", color: true, label: "Earth clouds", encodedBytes: 226113 }
+        { path: "assets/earth/earth-color.jpg", color: true, label: "Earth colour", encodedBytes: 512606 },
+        { path: "assets/earth/earth-normal.jpg", color: false, label: "Earth normal", encodedBytes: 336774 },
+        { path: "assets/earth/earth-specular.jpg", color: false, label: "Earth specular", encodedBytes: 223421 },
+        { path: "assets/earth/earth-clouds.png", color: true, label: "Earth clouds", encodedBytes: 226113 }
       ];
       const expectedTextureBytes = textureAssets.reduce((sum, asset) => sum + asset.encodedBytes, 0);
       let loadedTextureBytes = 0;
@@ -63,11 +63,9 @@
         try {
           const response = await fetch(asset.path, { cache: "force-cache" });
           if (!response.ok) throw new Error("Texture request failed: " + response.status);
-          const base64 = await response.text();
-          const binary = atob(base64.replace(/\s/g, ""));
-          const bytes = new Uint8Array(binary.length);
-          for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-          const mime = asset.path.endsWith(".png.b64") ? "image/png" : "image/jpeg";
+          const buffer = await response.arrayBuffer();
+          const bytes = new Uint8Array(buffer);
+          const mime = asset.path.endsWith(".png") ? "image/png" : "image/jpeg";
           const objectUrl = URL.createObjectURL(new Blob([bytes], { type: mime }));
           const image = new Image();
           image.src = objectUrl;

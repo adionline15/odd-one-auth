@@ -37,8 +37,21 @@ test("hero Earth has 30fps idle and 60fps active pacing", () => {
 });
 
 test("Earth assets are same-origin and progress is byte-based", () => {
-  assert.match(earth, /assets\/earth\/earth-color\.jpg\.b64/);
-  assert.match(earth, /loadedBytes: loadedTextureBytes/);
-  assert.match(earth, /bytes\.byteLength/);
-  assert.doesNotMatch(earth, /threejs\.org\/examples\/textures\/planets/);
+  assert.ok(earth.includes("assets/earth/earth-color.jpg"));
+  assert.ok(earth.includes("response.arrayBuffer()"));
+  assert.ok(!earth.includes(".b64"));
+  assert.ok(earth.includes("loadedBytes: loadedTextureBytes"));
+  assert.ok(earth.includes("bytes.byteLength"));
+  assert.ok(!earth.includes("threejs.org/examples/textures/planets"));
+});
+
+test("layer debug is query-gated and reports live boundary/label visibility", async () => {
+  const debug = await readFile(new URL("./debug-layers.js", import.meta.url), "utf8");
+  assert.match(js, /hostname\.endsWith\("\.vercel\.app"\)/);
+  assert.match(js, /get\("debug"\) === "layers"/);
+  assert.match(js, /import\("\.\/debug-layers\.js"\)/);
+  assert.match(debug, /Visible labels/);
+  assert.match(debug, /Boundary candidates/);
+  assert.match(debug, /STILL VISIBLE/);
+  assert.match(html, /Solar System Scope \/ INOVE · CC BY 4\.0/);
 });

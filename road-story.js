@@ -148,7 +148,12 @@ async function loadMapOnce() {
       mapReady = true;
       mapHost.classList.add("map-ready");
       setStatus("Map ready · OpenFreeMap / OpenStreetMap", false);
-      hideUnapprovedBaseBoundaries();
+      const boundaryAudit = hideUnapprovedBaseBoundaries();
+      if (window.location.hostname.endsWith(".vercel.app") && new URLSearchParams(window.location.search).get("debug") === "layers") {
+        import("./debug-layers.js").then(({ mountLayerDebugPanel }) => {
+          mountLayerDebugPanel(map, boundaryAudit);
+        }).catch(error => console.error("[Odd-One debug layers] Could not load panel:", error));
+      }
       targetProgress = storyProgress();
       currentProgress = targetProgress;
       updateCamera(true);
@@ -178,18 +183,27 @@ async function loadMapOnce() {
 }
 
 function hideUnapprovedBaseBoundaries() {
-  if (!map || !map.getStyle()) return;
+  if (!map || !map.getStyle()) return { hidden: [], candidates: [] };
   const layers = map.getStyle().layers || [];
+  const hidden = [];
+  const candidates = [];
   for (const layer of layers) {
     const id = String(layer.id || "").toLowerCase();
     const sourceLayer = String(layer["source-layer"] || "").toLowerCase();
     const boundaryLike = /boundary|admin|disputed|country.?border|state.?border/.test(id + " " + sourceLayer);
+    if (boundaryLike) candidates.push({ id: layer.id, sourceLayer: layer["source-layer"] || "", type: layer.type });
     if (boundaryLike && map.getLayer(layer.id)) {
-      try { map.setLayoutProperty(layer.id, "visibility", "none"); } catch (_) {}
+      try {
+        map.setLayoutProperty(layer.id, "visibility", "none");
+        hidden.push({ id: layer.id, sourceLayer: layer["source-layer"] || "", type: layer.type });
+      } catch (_) {}
     }
   }
-  // Do not substitute invented geometry. A separately sourced, legally reviewed
-  // official boundary dataset must be supplied before this layer is implemented.
+  const report = { hidden, candidates, styleUrl: STYLE_URL, capturedAt: new Date().toISOString() };
+  window.__oddOneBoundaryAudit = report;
+  // No invented replacement geometry: a separately sourced and legally reviewed
+  // official boundary dataset is required before adding a replacement boundary.
+  return report;
 }
 
 function storyProgress() {
