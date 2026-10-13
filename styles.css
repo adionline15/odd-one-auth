@@ -509,3 +509,27 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
 @media (prefers-reduced-motion: reduce) {
   .world-globe { transition: none !important; }
 }
+
+
+/* Focused globe/card separation and WCAG-oriented secondary text contrast */
+.auth-panel {
+  background: linear-gradient(145deg, rgba(7, 13, 23, .97), rgba(5, 9, 16, .985)) !important;
+  backdrop-filter: blur(18px) saturate(115%);
+  -webkit-backdrop-filter: blur(18px) saturate(115%);
+  border-color: rgba(130, 166, 211, .38);
+}
+.auth-card .sub,
+.auth-card input::placeholder,
+.auth-index,
+.auth-panel-head,
+.auth-panel-foot,
+.terms,
+.secure,
+.or,
+.scroll-note,
+.scene-coordinate,
+.chapter-tag {
+  color: #c5cfde !important;
+  opacity: 1 !important;
+}
+.auth-card input::placeholder { color: #b8c5d6 !important; }
