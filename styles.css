@@ -420,3 +420,21 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
 .world-globe.has-3d-earth::after {
   display: none !important;
 }
+
+
+/* Fix the actual scroll scene: section overlays were hiding the fixed WebGL planet. */
+.timeline-section {
+  background: linear-gradient(180deg, #090d14b8, #090d14a8) !important;
+}
+.closing-section {
+  background: radial-gradient(ellipse at 50% 48%, #0b1a2d80, #05070b9c 78%) !important;
+}
+.closing-orbit {
+  opacity: .18 !important;
+}
+.world-globe {
+  z-index: 0 !important;
+}
+.timeline-section, .closing-section {
+  isolation: isolate;
+}
