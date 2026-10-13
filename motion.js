@@ -93,7 +93,7 @@
       ? Math.min(1, Math.max(0, (innerHeight - closingRect.top) / (innerHeight * 1.15))) : 0;
     const heroProgress = hero ? Math.min(1, Math.max(0, scrollY / Math.max(1, heroHeight * .78))) : 1;
     const earthOpacity = reduceMotion ? .88
-      : closingProgress > 0 ? .92 * closingProgress
+      : closingProgress > 0 ? .92 * Math.min(1, closingProgress * 2.6)
       : .92 * (1 - heroProgress);
     const earthStartLeft = innerWidth <= 920 ? 50 : 37;
     root.style.setProperty("--earth-left", reduceMotion ? "72%" : `${earthStartLeft + closingProgress * (72 - earthStartLeft)}%`);
