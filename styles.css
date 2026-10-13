@@ -463,3 +463,13 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
 .auth-panel {
   backdrop-filter: blur(12px);
 }
+
+/* Readability and focus refinements */
+.hero-intro { color: #d0d5df !important; max-width: 330px; text-shadow: 0 2px 18px #05070b; }
+.auth-card .sub { color: #c4cbd7 !important; }
+.auth-card input::placeholder { color: #9aa7b8 !important; opacity: 1; }
+.auth-panel-head, .auth-panel-foot, .terms, .secure { color: #b7c2d2 !important; opacity: 1 !important; }
+.topnav a { color: #d0d7e2; }
+.topnav a:hover, .topnav a:focus-visible { color: #fff; text-decoration: underline; text-decoration-color: #60a5fa; text-underline-offset: 6px; }
+.submit { background: linear-gradient(110deg, #2563eb, #3b82f6 52%, #60a5fa) !important; color: #fff !important; border-color: #60a5fa !important; box-shadow: 0 8px 24px #2563eb2e; }
+@media (min-width: 921px) { .hero-copy { max-width: 430px; } .hero-intro { max-width: 310px; } }
