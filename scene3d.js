@@ -1,6 +1,7 @@
 (() => {
   const host = document.querySelector('.world-globe');
-  if (!host || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!host) return;
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const canvas = document.createElement('canvas');
   canvas.className = 'earth-webgl';
@@ -43,7 +44,13 @@
       const loadTexture = (url, colorMap = false) => new Promise((resolve) => {
         loader.load(url, (texture) => {
           texture.colorSpace = colorMap ? THREE.SRGBColorSpace : THREE.NoColorSpace;
-          texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+          texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+          texture.wrapS = THREE.RepeatWrapping;
+          texture.wrapT = THREE.ClampToEdgeWrapping;
+          texture.generateMipmaps = true;
+          texture.minFilter = THREE.LinearMipmapLinearFilter;
+          texture.magFilter = THREE.LinearFilter;
+          texture.needsUpdate = true;
           resolve(texture);
         }, undefined, () => resolve(null));
       });
@@ -60,7 +67,7 @@
           color: 0xf4f6fa,
           map: colorMap || null,
           normalMap: normalMap || null,
-          normalScale: new THREE.Vector2(0.62, 0.62),
+          normalScale: new THREE.Vector2(0.45, 0.45),
           specularMap: specularMap || null,
           specular: new THREE.Color(0x182c40),
           shininess: 8
@@ -125,32 +132,43 @@
         }));
         scene.add(stars);
 
-        const pointer = { x: 0, y: 0, tx: 0, ty: 0, down: false, lastX: 0 };
+        const pointer = { x: 0, y: 0, down: false, lastX: 0, lastY: 0, lastInput: 0 };
+        const indiaYaw = Math.PI;
+        const indiaPitch = -0.08;
+        const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
         const onPointerMove = (event) => {
-          const rect = host.getBoundingClientRect();
-          pointer.tx = ((event.clientX - rect.left) / rect.width - 0.5) * 0.48;
-          pointer.ty = ((event.clientY - rect.top) / rect.height - 0.5) * 0.28;
-          if (pointer.down) {
-            earth.rotation.y += (event.clientX - pointer.lastX) * 0.006;
-          }
+          if (!pointer.down) return;
+          const dx = event.clientX - pointer.lastX;
+          const dy = event.clientY - pointer.lastY;
+          earthGroup.rotation.y += dx * 0.005;
+          earthGroup.rotation.x = clamp(earthGroup.rotation.x + dy * 0.003, -0.45, 0.45);
           pointer.lastX = event.clientX;
+          pointer.lastY = event.clientY;
+          pointer.lastInput = performance.now();
         };
         const onPointerDown = (event) => {
           pointer.down = true;
           pointer.lastX = event.clientX;
+          pointer.lastY = event.clientY;
+          pointer.lastInput = performance.now();
           host.setPointerCapture?.(event.pointerId);
         };
-        const onPointerUp = () => { pointer.down = false; };
+        const onPointerUp = () => {
+          pointer.down = false;
+          pointer.lastInput = performance.now();
+        };
         host.addEventListener('pointermove', onPointerMove, { passive: true });
         host.addEventListener('pointerdown', onPointerDown, { passive: true });
         host.addEventListener('pointerup', onPointerUp, { passive: true });
         host.addEventListener('pointercancel', onPointerUp, { passive: true });
-        host.addEventListener('pointerleave', () => { pointer.tx = 0; pointer.ty = 0; pointer.down = false; }, { passive: true });
+        host.addEventListener('pointerleave', onPointerUp, { passive: true });
 
         let raf = 0;
         let disposed = false;
-        let scrollRotation = Math.PI;
         let lastFrameTime = 0;
+        let introStart = 0;
+        let lastTime = 0;
+        let rafRunning = false;
         const clock = new THREE.Clock();
         const resize = () => {
           if (disposed) return;
@@ -162,25 +180,44 @@
         };
         const observer = new ResizeObserver(resize);
         observer.observe(host);
+        const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
         const render = (now = 0) => {
+          rafRunning = false;
           if (disposed || document.hidden) return;
+          rafRunning = true;
           raf = requestAnimationFrame(render);
-          // Cap the scene to ~30fps: keep interactions smooth without monopolising the GPU.
-          if (now - lastFrameTime < 33) return;
+          // Render at display rate on capable devices; no DOM reads or framework state updates per frame.
+          const frameInterval = window.innerWidth < 700 ? 1000 / 45 : 1000 / 60;
+          if (now - lastFrameTime < frameInterval) return;
           lastFrameTime = now;
-          const t = clock.getElapsedTime();
-          // Keep the globe locked on the India-facing orientation; no scroll-driven orbit.
-          scrollRotation = Math.PI;
-          pointer.x += (pointer.tx - pointer.x) * 0.035;
-          pointer.y += (pointer.ty - pointer.y) * 0.035;
-          earth.rotation.x += (pointer.y * 0.06 - earth.rotation.x) * 0.018;
-          earthGroup.rotation.y = scrollRotation;
+          const elapsed = clock.getElapsedTime();
+          if (!introStart) introStart = now;
+          const introProgress = reducedMotion ? 1 : clamp((now - introStart) / 2350, 0, 1);
+          const eased = easeOutCubic(introProgress);
+          const idleFor = pointer.lastInput ? now - pointer.lastInput : Infinity;
+          if (!pointer.down) {
+            if (introProgress < 1) {
+              earthGroup.rotation.y = indiaYaw - (1 - eased) * Math.PI * 2;
+              earthGroup.rotation.x = indiaPitch;
+            } else if (idleFor > 3600) {
+              const driftTime = (now - introStart - 2350) / 1000;
+              const driftYaw = reducedMotion ? 0 : Math.sin(driftTime * 0.22) * (8 * Math.PI / 180);
+              const driftPitch = reducedMotion ? 0 : Math.sin(driftTime * 0.16) * (3 * Math.PI / 180);
+              const targetYaw = indiaYaw + driftYaw;
+              const targetPitch = indiaPitch + driftPitch;
+              earthGroup.rotation.y += (targetYaw - earthGroup.rotation.y) * 0.018;
+              earthGroup.rotation.x += (targetPitch - earthGroup.rotation.x) * 0.018;
+            } else if (pointer.lastInput) {
+              earthGroup.rotation.y += (indiaYaw - earthGroup.rotation.y) * 0.012;
+              earthGroup.rotation.x += (indiaPitch - earthGroup.rotation.x) * 0.012;
+            }
+          }
           const clouds = earthGroup.userData.clouds;
           if (clouds) {
-            clouds.rotation.y = earth.rotation.y;
-            clouds.rotation.x = earth.rotation.x;
+            clouds.rotation.y = earthGroup.rotation.y + (reducedMotion ? 0 : elapsed * 0.00006);
+            clouds.rotation.x = earthGroup.rotation.x;
           }
-          stars.rotation.y = t * 0.0005;
+          stars.rotation.y = reducedMotion ? 0 : elapsed * 0.00012;
           renderer.render(scene, camera);
         };
         host.classList.add('has-3d-earth');
@@ -189,8 +226,14 @@
         render();
 
         document.addEventListener('visibilitychange', () => {
-          if (document.hidden) cancelAnimationFrame(raf);
-          else if (!disposed) render();
+          if (document.hidden) {
+            cancelAnimationFrame(raf);
+            rafRunning = false;
+          } else if (!disposed && !rafRunning) {
+            lastFrameTime = 0;
+            introStart = performance.now() - 2350;
+            raf = requestAnimationFrame(render);
+          }
         });
         window.addEventListener('pagehide', () => {
           disposed = true;
