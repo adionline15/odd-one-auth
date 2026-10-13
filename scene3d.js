@@ -213,6 +213,10 @@
         let sectionActive = true;
         let heroPaused = document.body.classList.contains("map-handoff-active");
         let motionActiveUntil = 0;
+        let perfLastRenderedAt = 0;
+        let perfWindowStart = 0;
+        let perfIntervalTotal = 0;
+        let perfSampleCount = 0;
         const clock = new THREE.Clock();
 
         const resize = () => {
@@ -242,6 +246,27 @@
           const frameInterval = activeMotion ? (1000 / 60) : (1000 / 30);
           if (now - lastFrameTime < frameInterval) return;
           lastFrameTime = now;
+          if (!perfWindowStart) perfWindowStart = now;
+          if (perfLastRenderedAt) {
+            perfIntervalTotal += now - perfLastRenderedAt;
+            perfSampleCount++;
+          }
+          perfLastRenderedAt = now;
+          if (now - perfWindowStart >= 5000) {
+            const meanFrameMs = perfSampleCount ? perfIntervalTotal / perfSampleCount : 0;
+            console.info("[Odd-One perf] Earth renderer", {
+              mode: activeMotion ? "active" : "idle",
+              renderedFrames: perfSampleCount,
+              meanFrameIntervalMs: Number(meanFrameMs.toFixed(2)),
+              estimatedFps: meanFrameMs ? Number((1000 / meanFrameMs).toFixed(1)) : 0,
+              hidden: document.hidden,
+              offscreen: !sectionActive,
+              pausedForMap: heroPaused
+            });
+            perfWindowStart = now;
+            perfIntervalTotal = 0;
+            perfSampleCount = 0;
+          }
 
           const elapsed = clock.getElapsedTime();
           if (!introStart) introStart = now;
