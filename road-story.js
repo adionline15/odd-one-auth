@@ -42,6 +42,7 @@ let perfLastReport = performance.now();
 let lastProgress = 0;
 let currentProgress = 0;
 let targetProgress = 0;
+let lastCameraUpdate = performance.now();
 let scrollFrame = 0;
 let cameraFrame = 0;
 let mapChapterVisible = false;
@@ -225,8 +226,10 @@ function cameraForProgress(progress) {
 function updateCamera(immediate = false) {
   if (!mapReady || !map || document.hidden) return;
   const progress = targetProgress;
-  const target = cameraForProgress(progress);
-  const factor = immediate || reducedMotion() ? 1 : 0.16;
+  const now = performance.now();
+  const delta = Math.max(0, now - lastCameraUpdate);
+  lastCameraUpdate = now;
+  const factor = immediate || reducedMotion() ? 1 : 1 - Math.exp(-delta / 115);
   currentProgress = factor === 1 ? progress : lerp(currentProgress, progress, factor);
   const eased = cameraForProgress(currentProgress);
   try {
