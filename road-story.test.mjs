@@ -37,12 +37,12 @@ test("hero Earth has 30fps idle and 60fps active pacing", () => {
 });
 
 test("Earth assets are same-origin and progress is byte-based", () => {
-  assert.match(earth, /assets\\/earth\\/earth-color\\.jpg"/);
-  assert.match(earth, /response\\.arrayBuffer\\(\\)/);
-  assert.doesNotMatch(earth, /\\.b64/);
-  assert.match(earth, /loadedBytes: loadedTextureBytes/);
-  assert.match(earth, /bytes\.byteLength/);
-  assert.doesNotMatch(earth, /threejs\.org\/examples\/textures\/planets/);
+  assert.ok(earth.includes("assets/earth/earth-color.jpg"));
+  assert.ok(earth.includes("response.arrayBuffer()"));
+  assert.ok(!earth.includes(".b64"));
+  assert.ok(earth.includes("loadedBytes: loadedTextureBytes"));
+  assert.ok(earth.includes("bytes.byteLength"));
+  assert.ok(!earth.includes("threejs.org/examples/textures/planets"));
 });
 
 test("layer debug is query-gated and reports live boundary/label visibility", async () => {
