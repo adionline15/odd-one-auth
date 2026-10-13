@@ -42,3 +42,13 @@ test("Earth assets are same-origin and progress is byte-based", () => {
   assert.match(earth, /bytes\.byteLength/);
   assert.doesNotMatch(earth, /threejs\.org\/examples\/textures\/planets/);
 });
+
+test("layer debug is query-gated and reports live boundary/label visibility", async () => {
+  const debug = await readFile(new URL("./debug-layers.js", import.meta.url), "utf8");
+  assert.match(js, /get\("debug"\) === "layers"/);
+  assert.match(js, /import\("\.\/debug-layers\.js"\)/);
+  assert.match(debug, /Visible labels/);
+  assert.match(debug, /Boundary candidates/);
+  assert.match(debug, /STILL VISIBLE/);
+  assert.match(html, /Solar System Scope \/ INOVE · CC BY 4\.0/);
+});
