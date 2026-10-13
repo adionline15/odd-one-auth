@@ -45,10 +45,32 @@
 
       const earthGroup = new THREE.Group();
       scene.add(earthGroup);
-      const loader = new THREE.TextureLoader();
-      const loadTexture = (url, colorMap = false) => new Promise(resolve => {
-        loader.load(url, texture => {
-          texture.colorSpace = colorMap ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+      const textureAssets = [
+        { path: "assets/earth/earth-color.jpg.b64", color: true, label: "Earth colour", encodedBytes: 694868 },
+        { path: "assets/earth/earth-normal.jpg.b64", color: false, label: "Earth normal", encodedBytes: 456516 },
+        { path: "assets/earth/earth-specular.jpg.b64", color: false, label: "Earth specular", encodedBytes: 302861 },
+        { path: "assets/earth/earth-clouds.png.b64", color: true, label: "Earth clouds", encodedBytes: 306509 }
+      ];
+      const expectedTextureBytes = Math.round(textureAssets.reduce((sum, asset) => sum + asset.encodedBytes, 0) * 0.75);
+      let loadedTextureBytes = 0;
+      const publishTextureProgress = (asset, bytes) => {
+        loadedTextureBytes += bytes;
+        document.dispatchEvent(new CustomEvent("oddone:textureprogress", {
+          detail: { loadedBytes: loadedTextureBytes, totalBytes: expectedTextureBytes, asset, percent: Math.min(100, loadedTextureBytes / expectedTextureBytes * 100) }
+        }));
+      };
+      const loadTexture = async (asset) => {
+        try {
+          const response = await fetch(asset.path, { cache: "force-cache" });
+          if (!response.ok) throw new Error("Texture request failed: " + response.status);
+          const base64 = await response.text();
+          const binary = atob(base64.replace(/\\s/g, ""));
+          const bytes = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+          const mime = asset.path.endsWith(".png.b64") ? "image/png" : "image/jpeg";
+          const bitmap = await createImageBitmap(new Blob([bytes], { type: mime }));
+          const texture = new THREE.Texture(bitmap);
+          texture.colorSpace = asset.color ? THREE.SRGBColorSpace : THREE.NoColorSpace;
           texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
           texture.wrapS = THREE.RepeatWrapping;
           texture.wrapT = THREE.ClampToEdgeWrapping;
@@ -56,16 +78,16 @@
           texture.minFilter = THREE.LinearMipmapLinearFilter;
           texture.magFilter = THREE.LinearFilter;
           texture.needsUpdate = true;
-          resolve(texture);
-        }, undefined, () => resolve(null));
-      });
+          publishTextureProgress(asset.label, bytes.byteLength);
+          return texture;
+        } catch (error) {
+          console.warn("[Odd-One] Local Earth texture unavailable:", asset.path, error);
+          publishTextureProgress(asset.label + " (unavailable)", 0);
+          return null;
+        }
+      };
 
-      Promise.all([
-        loadTexture("https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg", true),
-        loadTexture("https://threejs.org/examples/textures/planets/earth_normal_2048.jpg"),
-        loadTexture("https://threejs.org/examples/textures/planets/earth_specular_2048.jpg"),
-        loadTexture("https://threejs.org/examples/textures/planets/earth_clouds_1024.png", true)
-      ]).then(([colorMap, normalMap, specularMap, cloudMap]) => {
+      Promise.all(textureAssets.map(loadTexture)).then(([colorMap, normalMap, specularMap, cloudMap]) => {
         if (!canvas.isConnected) return;
 
         const earthMaterial = new THREE.MeshPhongMaterial({
