@@ -1,95 +1,93 @@
 (() => {
   const root = document.documentElement;
-  root.classList.add("motion-ready");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const progress = document.createElement("div");
   progress.className = "scroll-progress";
   progress.setAttribute("aria-hidden", "true");
   document.body.append(progress);
-  const glow = document.createElement("div");
-  glow.className = "cursor-glow";
-  glow.setAttribute("aria-hidden", "true");
-  document.body.append(glow);
 
   const hero = document.querySelector(".hero");
-  const scene = document.querySelector(".monument-scene");
-  const india = document.querySelector(".india-mark");
-  const title = document.querySelector("#hero-title");
-  const panel = document.querySelector(".auth-panel");
+  const closing = document.querySelector(".closing-section");
+  const earth = document.querySelector(".world-globe");
   const cards = [...document.querySelectorAll(".era-card")];
-  const revealItems = [
-    ...document.querySelectorAll(".section-heading, .timeline-rail, .era-card, .history-note, .closing-section > *")
-  ];
-  revealItems.forEach((el, i) => {
+  const revealItems = [...document.querySelectorAll(".section-heading,.timeline-rail,.era-card,.history-note,.closing-section > *")];
+
+  revealItems.forEach((el, index) => {
     el.classList.add("motion-reveal");
-    el.style.setProperty("--reveal-delay", `${Math.min(i % 4, 3) * 90}ms`);
+    el.style.setProperty("--reveal-delay", `${(index % 4) * 75}ms`);
   });
 
   if ("IntersectionObserver" in window) {
-    const observer = new IntersectionObserver(entries => {
+    const revealObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        }
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        revealObserver.unobserve(entry.target);
       });
-    }, { threshold: 0.14, rootMargin: "0px 0px -35px 0px" });
-    revealItems.forEach(el => observer.observe(el));
+    }, { threshold: 0.12, rootMargin: "0px 0px -28px 0px" });
+    revealItems.forEach(el => revealObserver.observe(el));
   } else {
     revealItems.forEach(el => el.classList.add("is-visible"));
   }
 
-  if (!reduceMotion && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-    let raf = 0, pointerX = innerWidth / 2, pointerY = innerHeight / 2;
-    window.addEventListener("pointermove", event => {
-      pointerX = event.clientX;
-      pointerY = event.clientY;
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        root.style.setProperty("--pointer-x", `${pointerX}px`);
-        root.style.setProperty("--pointer-y", `${pointerY}px`);
-        if (hero && scene) {
-          const x = (pointerX / innerWidth - .5);
-          const y = (pointerY / innerHeight - .5);
-          scene.style.setProperty("--scene-x", `${x * 15}px`);
-          scene.style.setProperty("--scene-y", `${y * 12}px`);
-          if (india) india.style.transform = `translate3d(${x * 8}px,${y * 8}px,0) rotateY(${x * -5}deg) rotateX(${y * 4}deg)`;
-          if (title) title.style.setProperty("--title-shift", `${x * -4}px`);
-          if (panel) panel.style.setProperty("--panel-tilt", `${x * .6}deg`);
-        }
-      });
-    }, { passive: true });
-    document.querySelectorAll(".era-card").forEach(card => {
-      card.addEventListener("pointermove", event => {
-        const r = card.getBoundingClientRect();
-        const x = (event.clientX - r.left) / r.width - .5;
-        const y = (event.clientY - r.top) / r.height - .5;
-        card.style.setProperty("--card-rotate-x", `${y * -3}deg`);
-        card.style.setProperty("--card-rotate-y", `${x * 3}deg`);
-        card.style.setProperty("--card-glow-x", `${(x + .5) * 100}%`);
-        card.style.setProperty("--card-glow-y", `${(y + .5) * 100}%`);
-      });
-      card.addEventListener("pointerleave", () => {
-        card.style.setProperty("--card-rotate-x", "0deg");
-        card.style.setProperty("--card-rotate-y", "0deg");
-      });
-    });
-  }
-
   let scrollRaf = 0;
+  const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
+  const smoothstep = value => {
+    const t = clamp(value);
+    return t * t * (3 - 2 * t);
+  };
+
   const updateScroll = () => {
-    const max = document.documentElement.scrollHeight - innerHeight;
-    const ratio = max > 0 ? scrollY / max : 0;
-    progress.style.transform = `scaleX(${ratio})`;
-    const heroHeight = hero ? hero.offsetHeight : 1;
-    root.style.setProperty("--hero-scroll", Math.min(scrollY / heroHeight, 1).toFixed(3));
+    const doc = document.documentElement;
+    const maxScroll = Math.max(1, doc.scrollHeight - window.innerHeight);
+    progress.style.transform = `scaleX(${clamp(window.scrollY / maxScroll)})`;
+
+    if (earth && hero && closing) {
+      const heroRect = hero.getBoundingClientRect();
+      const closingRect = closing.getBoundingClientRect();
+      const heroProgress = clamp((window.innerHeight - heroRect.bottom) / Math.max(1, heroRect.height * 0.58));
+      const closingProgress = clamp((window.innerHeight - closingRect.top) / Math.max(1, closingRect.height * 0.62));
+      const toClosing = smoothstep(closingProgress);
+      const awayFromHero = smoothstep(heroProgress);
+      const opacity = Math.max(0, (1 - awayFromHero) * 0.96, toClosing * 0.92);
+      if (reduceMotion) {
+        root.style.setProperty("--earth-x", "35vw");
+        root.style.setProperty("--earth-y", "52vh");
+        root.style.setProperty("--earth-scale", "0.92");
+        root.style.setProperty("--earth-opacity", "0.38");
+        root.style.setProperty("--closing-progress", "0");
+        earth.dataset.closingProgress = "0";
+        earth.dataset.heroProgress = "0";
+        scrollRaf = 0;
+        return;
+      }
+      const mobile = window.innerWidth <= 820;
+      const startX = mobile ? 54 : 35;
+      const endX = mobile ? 79 : 76;
+      const startY = mobile ? 28 : 52;
+      const endY = mobile ? 52 : 55;
+      const startScale = mobile ? 0.76 : 0.92;
+      const endScale = mobile ? 1.12 : 1.34;
+      const x = startX + (endX - startX) * toClosing;
+      const y = startY + (endY - startY) * toClosing;
+      const scale = startScale + (endScale - startScale) * toClosing;
+      root.style.setProperty("--earth-x", `${x}vw`);
+      root.style.setProperty("--earth-y", `${y}vh`);
+      root.style.setProperty("--earth-scale", scale.toFixed(3));
+      root.style.setProperty("--earth-opacity", opacity.toFixed(3));
+      root.style.setProperty("--closing-progress", toClosing.toFixed(3));
+      earth.dataset.closingProgress = toClosing.toFixed(3);
+      earth.dataset.heroProgress = heroProgress.toFixed(3);
+    }
     scrollRaf = 0;
   };
-  window.addEventListener("scroll", () => {
-    if (!scrollRaf) scrollRaf = requestAnimationFrame(updateScroll);
-  }, { passive: true });
-  window.addEventListener("resize", updateScroll, { passive: true });
+
+  const scheduleScroll = () => {
+    if (scrollRaf) return;
+    scrollRaf = requestAnimationFrame(updateScroll);
+  };
+  window.addEventListener("scroll", scheduleScroll, { passive: true });
+  window.addEventListener("resize", scheduleScroll, { passive: true });
   updateScroll();
 
   document.querySelectorAll('a[href^="#"]').forEach(link => {
@@ -102,8 +100,27 @@
   });
 
   cards.forEach((card, index) => {
-    card.style.setProperty("--card-index", index);
     card.setAttribute("tabindex", "0");
     card.setAttribute("aria-label", `History chapter ${index + 1}: ${card.querySelector("h3")?.textContent || "Explore"}`);
   });
+
+  if (!reduceMotion && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    let pointerRaf = 0;
+    window.addEventListener("pointermove", event => {
+      if (pointerRaf) return;
+      pointerRaf = requestAnimationFrame(() => {
+        pointerRaf = 0;
+        const x = event.clientX / Math.max(1, window.innerWidth) - 0.5;
+        const y = event.clientY / Math.max(1, window.innerHeight) - 0.5;
+        root.style.setProperty("--pointer-x", `${event.clientX}px`);
+        root.style.setProperty("--pointer-y", `${event.clientY}px`);
+        cards.forEach(card => {
+          const rect = card.getBoundingClientRect();
+          if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) return;
+          card.style.setProperty("--card-glow-x", `${((event.clientX - rect.left) / rect.width) * 100}%`);
+          card.style.setProperty("--card-glow-y", `${((event.clientY - rect.top) / rect.height) * 100}%`);
+        });
+      });
+    }, { passive: true });
+  }
 })();

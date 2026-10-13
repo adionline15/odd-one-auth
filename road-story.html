@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#05070b">
+  <meta name="description" content="Odd-One road intelligence — a cinematic story of India's connections.">
+  <title>Odd-One — Road Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="road-story.css">
+  <script type="module" src="scene3d.js"></script>
+  <script type="module" src="road-story.js"></script>
+</head>
+<body class="road-story">
+  <a class="skip-link" href="#chapters">Skip to story</a>
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <div class="earth-preloader" id="earth-preloader" role="status" aria-live="polite"><span class="preloader-kicker">ODD-ONE / EARTH ENGINE</span><b id="earth-progress-label">Preparing Earth textures</b><div class="preloader-track"><i id="earth-progress-bar"></i></div><small id="earth-progress-detail">0 bytes loaded</small></div>
+  <div class="world-globe" aria-hidden="true"><div class="world-globe-land"></div><div class="world-globe-grid"></div><div class="world-globe-shine"></div></div>
+  <div class="edge-shade" aria-hidden="true"></div>
+
+  <header class="story-topbar">
+    <a class="brand" href="index.html" aria-label="odd-one.in home">odd-one<span>.in</span></a>
+    <div class="top-meta"><span class="live-dot"></span> ROAD INTELLIGENCE / PREVIEW</div>
+    <a class="top-link" href="#chapters">Explore the story <span>↓</span></a>
+  </header>
+
+  <main id="chapters">
+    <section class="chapter hero" id="earth" data-chapter="earth" aria-labelledby="earth-title">
+      <div class="chapter-content">
+        <p class="eyebrow"><span></span> 01 / THE BIG PICTURE</p>
+        <h1 id="earth-title">Every road<br>changes <em>everything.</em></h1>
+        <p class="chapter-copy">India is not a static map. It is a living network of routes, new connections and places that deserve to be seen.</p>
+        <a class="scroll-cue" href="#india"><span class="scroll-line"></span> SCROLL TO GO CLOSER <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="hero-coordinates" aria-hidden="true"><span>20°35′37.3″N</span><span>78°57′46.4″E</span><small>INDIA · EARTH VIEW</small></div>
+    </section>
+
+    <section class="chapter map-chapter" id="india" data-chapter="india" aria-labelledby="india-title">
+      <div class="map-frame" aria-label="Interactive geographic map">
+        <div id="map" role="application" aria-label="Map of India. Use the map controls or the chapter navigation to explore."></div>
+        <div class="map-vignette" aria-hidden="true"></div>
+        <div class="map-attribution">Map data © OpenStreetMap contributors · Tiles by OpenFreeMap</div>
+        <div class="map-status" id="map-status" role="status" aria-live="polite">Preparing map…</div>
+        <div class="boundary-notice" id="boundary-notice">Official India boundary layer not supplied · review required</div>
+        <div class="map-readout" aria-live="polite"><span id="readout-index">02</span><b id="readout-title">INDIA / NETWORK</b><small id="readout-subtitle">GEOGRAPHIC VIEW</small></div>
+        <div class="map-controls" aria-label="Map chapter controls">
+          <button type="button" data-go="india" aria-current="step">India</button>
+          <button type="button" data-go="state">State</button>
+          <button type="button" data-go="city">City</button>
+        </div>
+        <div class="data-legend"><span class="legend-dot"></span> ROAD INTELLIGENCE LAYER <b>MOCK DEMO</b></div>
+      </div>
+      <div class="chapter-content map-copy">
+        <p class="eyebrow"><span></span> 02 / INDIA</p>
+        <h2 id="india-title">A network<br>in <em>motion.</em></h2>
+        <p class="chapter-copy">Move from the planet to the subcontinent. The geographic map is real; road-quality overlays are illustrative mock data, not verified coverage.</p>
+        <p class="chapter-index">SCROLL TO TRACE THE CONNECTIONS <span>↓</span></p>
+      </div>
+    </section>
+
+    <section class="chapter state-chapter" id="state" data-chapter="state" aria-labelledby="state-title">
+      <div class="chapter-content">
+        <p class="eyebrow"><span></span> 03 / STATE SCALE</p>
+        <h2 id="state-title">The details<br>live <em>between.</em></h2>
+        <p class="chapter-copy">At state scale, roads become a connected system. This chapter is a camera demonstration; its highlighted network is explicitly illustrative.</p>
+        <div class="mock-callout"><span class="mock-pulse"></span><div><b>ILLUSTRATIVE NETWORK</b><small>No verified road-quality or coverage dataset is connected.</small></div></div>
+      </div>
+    </section>
+
+    <section class="chapter city-chapter closing-section" id="city" data-chapter="city" aria-labelledby="city-title">
+      <div class="chapter-content">
+        <p class="eyebrow"><span></span> 04 / CITY SCALE</p>
+        <h2 id="city-title">See the roads.<br>Understand <em>the system.</em></h2>
+        <p class="chapter-copy">A future road-intelligence layer can help surface changes, gaps and connections. This preview demonstrates the experience, not a live operational dataset.</p>
+        <a class="end-link" href="#earth">Return to Earth <span aria-hidden="true">↑</span></a>
+      </div>
+      <footer class="story-footer"><span>ODD-ONE.IN © 2026</span><span><a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noreferrer">Earth textures: Solar System Scope / INOVE · CC BY 4.0</a></span><span>ISOLATED PREVIEW · NOT PRODUCTION</span></footer>
+    </section>
+  </main>
+
+  <nav class="chapter-nav" aria-label="Story chapters">
+    <a href="#earth" aria-label="Chapter 1: Earth" aria-current="step"><span>01</span><i></i></a>
+    <a href="#india" aria-label="Chapter 2: India"><span>02</span><i></i></a>
+    <a href="#state" aria-label="Chapter 3: State"><span>03</span><i></i></a>
+    <a href="#city" aria-label="Chapter 4: City"><span>04</span><i></i></a>
+  </nav>
+
+  <noscript><div class="no-script">JavaScript is disabled. Use the chapter headings above as a static story; the interactive map requires JavaScript.</div></noscript>
+</body>
+</html>

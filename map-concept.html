@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050608">
+<title>Odd-One — Atlas / India</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
+<style>
+:root{color-scheme:dark;--ink:#f3f4f6;--muted:#9296a1;--line:#ffffff18;--blue:#9eb8ff;--blue2:#527cff;--glass:rgba(10,12,18,.72);font-family:Manrope,system-ui,sans-serif}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050608;color:var(--ink)}body{isolation:isolate}button,input{font:inherit}button{color:inherit;cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+#map{position:absolute;inset:0;background:radial-gradient(ellipse at 54% 45%,#172033 0,#080b12 48%,#050608 80%)}.maplibregl-canvas{outline:none}.maplibregl-ctrl-attrib{display:none!important}.maplibregl-ctrl-bottom-left{display:none}
+.vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 54% 46%,transparent 28%,#05060838 68%,#050608c9 115%)}.noise{position:absolute;inset:0;z-index:20;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.top{position:absolute;z-index:8;top:0;left:0;right:0;height:76px;display:flex;align-items:center;gap:28px;padding:0 28px;border-bottom:1px solid #ffffff10;background:linear-gradient(#050608a8,transparent);pointer-events:none}.top>*{pointer-events:auto}.brand{font-size:19px;letter-spacing:-1.3px;font-weight:800;text-decoration:none;color:white}.brand span{color:var(--blue)}.topline{height:25px;width:1px;background:#ffffff25}.crumb{font:10px 'DM Mono',monospace;letter-spacing:1.7px;color:#aeb5c3}.top-right{margin-left:auto;display:flex;align-items:center;gap:10px}.status{font:9px 'DM Mono',monospace;letter-spacing:1px;color:#b5c3df;display:flex;align-items:center;gap:8px}.dot{width:6px;height:6px;border-radius:50%;background:#a7f3d0;box-shadow:0 0 12px #a7f3d080}.iconbtn{width:36px;height:36px;border:1px solid var(--line);border-radius:50%;background:#080b12a8;display:grid;place-items:center;transition:background .25s,border .25s,transform .25s}.iconbtn:hover{background:#1b2438;border-color:#9eb8ff66;transform:translateY(-1px)}
+.panel{position:absolute;z-index:7;background:var(--glass);border:1px solid #ffffff1a;backdrop-filter:blur(24px) saturate(125%);-webkit-backdrop-filter:blur(24px) saturate(125%);box-shadow:0 24px 90px #0005;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .3s}
+.left{top:100px;left:24px;width:296px;border-radius:17px;padding:19px}.eyebrow{font:9px 'DM Mono',monospace;letter-spacing:1.7px;color:#9aa6bc}.searchrow{margin-top:13px;display:flex;gap:8px}.searchbox{min-width:0;flex:1;display:flex;align-items:center;gap:9px;border:1px solid #ffffff20;border-radius:10px;background:#ffffff08;padding:0 11px;height:43px}.searchbox svg{flex:none;color:#aab4c8}.searchbox input{min-width:0;width:100%;border:0;outline:none;background:transparent;color:#fff;font-size:11px}.searchbox input::placeholder{color:#7f8798}.searchgo{width:43px;height:43px;border:0;border-radius:10px;background:#dfe7ff;color:#0b1020;font-size:18px;transition:transform .2s,background .2s}.searchgo:hover{transform:translateY(-2px);background:white}.sectionline{height:1px;background:#ffffff14;margin:18px 0}.placehead{display:flex;align-items:center;justify-content:space-between}.placehead h1{font-size:25px;letter-spacing:-1.2px;margin:8px 0 0;font-weight:600}.coordinates{font:9px 'DM Mono',monospace;color:#99a7bd;letter-spacing:.4px;margin-top:5px}.pill{border:1px solid #8aa6ff42;background:#718bff14;color:#c8d6ff;border-radius:30px;padding:6px 9px;font:8px 'DM Mono',monospace;letter-spacing:1px}.metricgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:12px;border:1px solid #ffffff12;background:#ffffff04;border-radius:10px}.metric small{display:block;color:#8f99aa;font:8px 'DM Mono',monospace;letter-spacing:1px}.metric strong{display:block;margin-top:7px;font-size:17px;font-weight:600;letter-spacing:-.6px}.metric em{font-style:normal;color:#aebee5;font-size:9px;margin-left:4px}.layers{display:flex;gap:7px;margin-top:11px}.layer{flex:1;border:1px solid #ffffff17;background:#ffffff05;border-radius:9px;padding:10px 7px;color:#9fa8b8;font-size:9px;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .25s}.layer.active,.layer:hover{color:#fff;border-color:#a4baff6b;background:#9eb8ff16}.layer i{display:block;width:7px;height:7px;border-radius:2px;background:#8393b5}.layer[data-layer="terrain"] i{background:#c5a47e}.layer[data-layer="satellite"] i{background:#8cc9a6}
+.right{top:100px;right:24px;width:224px;border-radius:16px;padding:17px}.righthead{display:flex;justify-content:space-between;align-items:center}.right h3{font-size:13px;letter-spacing:-.3px;font-weight:600;margin:17px 0 4px}.right p{font-size:10px;line-height:1.65;color:#9ca6b7;margin:0}.mini-stat{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #ffffff10;font-size:10px}.mini-stat span{color:#9ca6b7}.mini-stat strong{font:10px 'DM Mono',monospace;color:#e1e8f8;font-weight:400}.insight{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(135deg,#7c98ff19,#ffffff04);border:1px solid #8aa6ff25}.insight-label{font:8px 'DM Mono',monospace;letter-spacing:1.3px;color:#b8c9ff}.insight p{margin-top:7px;color:#c9d0de;font-size:10px;line-height:1.6}
+.bottom{position:absolute;z-index:7;bottom:23px;left:24px;right:24px;display:flex;align-items:end;justify-content:space-between;gap:16px;pointer-events:none}.bottom>*{pointer-events:auto}.timeline{width:min(570px,calc(100% - 310px));border:1px solid #ffffff19;border-radius:14px;background:#080b12b8;backdrop-filter:blur(20px);padding:14px 17px}.timeline-top{display:flex;align-items:center;justify-content:space-between;font:9px 'DM Mono',monospace;letter-spacing:1px;color:#a5afc0}.timeline-top b{font-weight:400;color:#d8e1f7}.range{width:100%;accent-color:#b4c5ff;margin:17px 0 8px;cursor:ew-resize}.years{display:flex;justify-content:space-between;font:8px 'DM Mono',monospace;color:#737d90}.timeline-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:12px}.timeline-bottom strong{font-size:10px;font-weight:500}.timeline-bottom span{font:8px 'DM Mono',monospace;letter-spacing:.8px;color:#9aa7bf}.controls{display:flex;gap:7px;align-items:center}.zoomstack{display:grid;gap:7px}.attribution{font:8px 'DM Mono',monospace;color:#9299a7;text-align:right;margin-top:7px}.attribution a{color:#b9c9ff;text-decoration:none}
+.centerlabel{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;opacity:.72;transition:opacity .4s}.centerlabel .cross{font-size:18px;color:#d3ddf6;text-shadow:0 0 20px #9eb8ff}.centerlabel span{display:block;margin-top:7px;font:8px 'DM Mono',monospace;letter-spacing:2px;color:#b2c0d8;white-space:nowrap}
+.toast{position:absolute;z-index:12;left:50%;top:88px;transform:translate(-50%,-10px);opacity:0;pointer-events:none;border:1px solid #ffffff20;background:#0a0d15e8;backdrop-filter:blur(18px);padding:10px 14px;border-radius:10px;color:#dbe4f8;font:10px 'DM Mono',monospace;transition:opacity .2s,transform .2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+.loading{position:absolute;z-index:6;left:50%;top:50%;transform:translate(-50%,-50%);font:9px 'DM Mono',monospace;letter-spacing:2px;color:#c2cde2;background:#050608a8;padding:12px 15px;border-radius:30px;border:1px solid #ffffff14;transition:opacity .5s}.loading.done{opacity:0}
+@media(max-width:850px){.right{display:none}.left{width:270px;left:14px;top:88px}.top{padding:0 16px;height:65px}.bottom{left:14px;right:14px;bottom:14px}.timeline{width:min(480px,calc(100% - 105px))}.crumb{display:none}.status{font-size:8px}}
+@media(max-width:560px){.left{width:auto;right:14px;top:80px;padding:14px}.left .sectionline:nth-of-type(2),.metricgrid,.layers{display:none}.placehead h1{font-size:21px}.bottom{display:block}.timeline{width:100%;padding:12px 14px}.controls{position:absolute;right:0;bottom:calc(100% + 12px)}.timeline-top{font-size:8px}.top-right .status{display:none}.top{height:58px}.centerlabel{top:52%}.left .eyebrow{font-size:8px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="map" aria-label="Interactive map of India"></div><div class="vignette"></div><div class="noise"></div>
+<div class="centerlabel" id="centerlabel"><div class="cross">＋</div><span>MOVE THROUGH THE MAP</span></div>
+<div class="loading" id="loading">INITIALISING ATLAS</div><div class="toast" id="toast" role="status"></div>
+<header class="top">
+  <a class="brand" href="#" aria-label="Odd-One home">odd-one<span>.in</span></a><div class="topline"></div><div class="crumb">ATLAS / INDIA / <span style="color:#e6eaf2">LIVE VIEW</span></div>
+  <div class="top-right"><div class="status"><i class="dot"></i> SPATIAL ENGINE ONLINE</div><button class="iconbtn" id="reset" aria-label="Reset map view" title="Reset view">↺</button><button class="iconbtn" id="fullscreen" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button></div>
+</header>
+<aside class="panel left">
+  <div class="eyebrow">01 / EXPLORE A PLACE</div>
+  <form class="searchrow" id="searchform"><label class="searchbox"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="search" autocomplete="off" placeholder="Search a city, road or region" aria-label="Search a place"></label><button class="searchgo" aria-label="Search">↗</button></form>
+  <div class="sectionline"></div>
+  <div class="placehead"><div><div class="eyebrow">CURRENT REGION</div><h1 id="region">India</h1><div class="coordinates" id="coordinates">20.5937° N · 78.9629° E</div></div><span class="pill" id="zoomlabel">GLOBE</span></div>
+  <div class="sectionline"></div>
+  <div class="metricgrid"><div class="metric"><small>LAND AREA</small><strong>3.29M <em>km²</em></strong></div><div class="metric"><small>STATES / UTs</small><strong>36 <em>regions</em></strong></div></div>
+  <div class="eyebrow" style="margin-top:17px">MAP LAYERS</div>
+  <div class="layers"><button class="layer active" data-layer="dark"><i></i>Night</button><button class="layer" data-layer="terrain"><i></i>Terrain</button><button class="layer" data-layer="satellite"><i></i>Streets</button></div>
+</aside>
+<aside class="panel right">
+  <div class="righthead"><span class="eyebrow">02 / FIELD NOTES</span><span class="pill">BETA</span></div>
+  <h3>Geography in context.</h3><p>Move across India's connected landscape. Select a point to explore its location and coordinates.</p>
+  <div class="sectionline"></div><div class="mini-stat"><span>Latitude</span><strong id="lat">20.5937° N</strong></div><div class="mini-stat"><span>Longitude</span><strong id="lng">78.9629° E</strong></div><div class="mini-stat"><span>Zoom level</span><strong id="zoom">1.8×</strong></div>
+  <div class="insight"><div class="insight-label">A DIFFERENT PERSPECTIVE</div><p>Every road is a connection. Every connection changes how a place is experienced.</p></div>
+</aside>
+<div class="bottom"><section class="timeline"><div class="timeline-top"><span>03 / TIME & TERRAIN</span><b id="timeLabel">PRESENT DAY</b></div><input class="range" id="timeRange" type="range" min="0" max="4" value="4" step="1" aria-label="Explore map history timeline"><div class="years"><span>2600 BCE</span><span>300 BCE</span><span>500 CE</span><span>1857</span><span>NOW</span></div><div class="timeline-bottom"><strong id="timelineTitle">India, in the present</strong><span>SCROLL OR DRAG TO EXPLORE</span></div></section>
+  <div><div class="controls"><div class="zoomstack"><button class="iconbtn" id="zoomIn" aria-label="Zoom in">＋</button><button class="iconbtn" id="zoomOut" aria-label="Zoom out">−</button></div><button class="iconbtn" id="locate" aria-label="Locate me" title="Locate me">◎</button></div><div class="attribution">MAP DATA © <a href="https://openfreemap.org" target="_blank" rel="noreferrer">OPENFREEMAP</a></div></div>
+</div>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const start = {center:[78.9629,20.5937],zoom:1.75,pitch:20,bearing:-4};
+  const toast = (message) => { $('toast').textContent=message; $('toast').classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>$('toast').classList.remove('show'),2600); };
+  if (!window.maplibregl) { $('loading').textContent='MAP ENGINE UNAVAILABLE · CHECK CONNECTION'; return; }
+  const map = new maplibregl.Map({
+    container:'map',style:'https://tiles.openfreemap.org/styles/dark',center:start.center,zoom:start.zoom,pitch:start.pitch,bearing:start.bearing,
+    projection:{type:'globe'},attributionControl:false,renderWorldCopies:false,antialias:true
+  });
+  let currentLayer='dark',marker=null;
+  map.addControl(new maplibregl.NavigationControl({showCompass:false,showZoom:false,visualizePitch:true}),'bottom-right');
+  map.on('load',()=>{
+    $('loading').classList.add('done');
+    try { map.setFog({color:'#080b12', 'high-color':'#17243c','space-color':'#03050a','star-intensity':0.28}); } catch(e) {}
+    map.easeTo({center:start.center,zoom:start.zoom,pitch:20,bearing:-4,duration:1400,easing:t=>1-Math.pow(1-t,3)});
+    updateStats();
+  });
+  map.on('error',e=>{ if(e.error) console.warn('Atlas map:',e.error.message); });
+  function updateStats(){
+    const c=map.getCenter(),z=map.getZoom();
+    $('lat').textContent=Math.abs(c.lat).toFixed(4)+'° '+(c.lat>=0?'N':'S');
+    $('lng').textContent=Math.abs(c.lng).toFixed(4)+'° '+(c.lng>=0?'E':'W');
+    $('coordinates').textContent=$('lat').textContent+' · '+$('lng').textContent;
+    $('zoom').textContent=z.toFixed(1)+'×';
+    $('zoomlabel').textContent=z<3?'GLOBE':z<6?'REGION':z<10?'CITY':'STREET';
+    if(z>4 && !$('region').dataset.pinned) $('region').textContent='Selected area';
+    if(z<3 && !$('region').dataset.pinned) $('region').textContent='India';
+  }
+  map.on('move',updateStats);
+  map.on('click',e=>{
+    const {lng,lat}=e.lngLat;
+    $('region').textContent='Pinned location';$('region').dataset.pinned='1';
+    if(marker) marker.remove();
+    const el=document.createElement('div');el.style.cssText='width:11px;height:11px;border:2px solid #fff;border-radius:50%;background:#8faaff;box-shadow:0 0 0 6px #8faaff30,0 0 22px #8faaff';
+    marker=new maplibregl.Marker({element:el}).setLngLat([lng,lat]).addTo(map);
+    $('timelineTitle').textContent='Point selected on the map';
+    toast('LOCATION PINNED · '+lat.toFixed(4)+'°, '+lng.toFixed(4)+'°');
+  });
+  $('searchform').addEventListener('submit',async e=>{
+    e.preventDefault();const q=$('search').value.trim();if(!q)return;
+    $('search').blur();toast('SEARCHING ATLAS…');
+    try{
+      const url='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q+', India');
+      const response=await fetch(url,{headers:{'Accept-Language':'en'}});
+      if(!response.ok)throw new Error('Search service unavailable');
+      const results=await response.json();if(!results.length)throw new Error('No matching place found');
+      const p=results[0],center=[Number(p.lon),Number(p.lat)];
+      $('region').textContent=(p.name||q).split(',')[0];$('region').dataset.pinned='1';
+      map.flyTo({center,zoom:Math.max(map.getZoom(),8),pitch:42,bearing:map.getBearing()+12,duration:2200,essential:true});
+      if(marker)marker.remove();marker=new maplibregl.Marker({color:'#9eb8ff'}).setLngLat(center).addTo(map);
+      $('timelineTitle').textContent='Exploring '+(p.name||q).split(',')[0];toast('DESTINATION FOUND · '+(p.name||q).split(',')[0]);
+    }catch(err){toast(err.message||'Could not complete search.');}
+  });
+  $('zoomIn').onclick=()=>map.easeTo({zoom:Math.min(map.getZoom()+1.1,18),duration:650});
+  $('zoomOut').onclick=()=>map.easeTo({zoom:Math.max(map.getZoom()-1.1,1),duration:650});
+  $('reset').onclick=()=>{ $('region').textContent='India';delete $('region').dataset.pinned;if(marker){marker.remove();marker=null}map.flyTo({...start,duration:1600,essential:true});$('timelineTitle').textContent='India, in the present';$('timeRange').value='4';$('timeLabel').textContent='PRESENT DAY';};
+  $('fullscreen').onclick=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){toast('Fullscreen is not available in this browser.')}};
+  $('locate').onclick=()=>{if(!navigator.geolocation){toast('Location is not supported by this browser.');return}toast('REQUESTING YOUR LOCATION…');navigator.geolocation.getCurrentPosition(pos=>{const c=[pos.coords.longitude,pos.coords.latitude];$('region').textContent='Your location';$('region').dataset.pinned='1';map.flyTo({center:c,zoom:12,pitch:48,duration:2200});if(marker)marker.remove();marker=new maplibregl.Marker({color:'#9eb8ff'}).setLngLat(c).addTo(map);},()=>toast('Location permission was not granted.'),{enableHighAccuracy:false,timeout:8000});};
+  document.querySelectorAll('.layer').forEach(btn=>btn.addEventListener('click',()=>{
+    const layer=btn.dataset.layer;document.querySelectorAll('.layer').forEach(b=>b.classList.toggle('active',b===btn));currentLayer=layer;
+    if(layer==='dark'){map.setStyle('https://tiles.openfreemap.org/styles/dark');map.once('style.load',()=>{try{map.setFog({color:'#080b12','high-color':'#17243c','space-color':'#03050a','star-intensity':0.28})}catch(e){}});toast('NIGHT LAYER ENABLED');}
+    else if(layer==='terrain'){map.setStyle('https://tiles.openfreemap.org/styles/positron');toast('TERRAIN / LIGHT REFERENCE ENABLED');}
+    else{map.setStyle('https://tiles.openfreemap.org/styles/liberty');toast('STREET DETAIL LAYER ENABLED');}
+  }));
+  const moments=[
+    ['THE FIRST CITIES','Indus cities & early trade routes'],
+    ['IDEAS & EMPIRES','Routes, kingdoms & cultural exchange'],
+    ['ART & DISCOVERY','Knowledge, craft & architecture'],
+    ['THE ROAD TO FREEDOM','Movements toward independence'],
+    ['PRESENT DAY','India, in the present']
+  ];
+  $('timeRange').addEventListener('input',e=>{const m=moments[Number(e.target.value)];$('timeLabel').textContent=m[0];$('timelineTitle').textContent=m[1];toast('HISTORICAL VIEW · '+m[0]);});
+  map.on('style.load',()=>{updateStats();});
+})();
+</script>
+</body>
+</html>

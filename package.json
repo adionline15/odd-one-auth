@@ -2,9 +2,12 @@
   "name": "odd-one-auth",
   "version": "0.1.0",
   "private": true,
-  "description": "Isolated premium auth experience for Odd-One",
+  "description": "Isolated premium auth and road-intelligence preview for Odd-One",
   "scripts": {
     "test": "node --test *.test.mjs"
+  },
+  "dependencies": {
+    "maplibre-gl": "6.14.0"
   },
   "engines": {
     "node": ">=20"
