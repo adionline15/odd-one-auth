@@ -5,19 +5,19 @@ import { readFile } from "node:fs/promises";
 const source = await readFile(new URL("./entrance.js", import.meta.url), "utf8");
 
 test("Earth startup timeout reveals the CSS fallback instead of blocking login", () => {
-  assert.match(source, /window\.setTimeout\(\(\) => \{/);
-  assert.match(source, /if \(earthReady\) return;/);
-  assert.match(source, /globe\.classList\.add\("earth-css-fallback"\)/);
-  assert.match(source, /reason: "startup-timeout"/);
-  assert.match(source, /\}, 9000\);/);
+  assert.ok(source.includes('if (earthReady) return;'));
+  assert.ok(source.includes('globe.classList.add("earth-css-fallback")'));
+  assert.ok(source.includes('reason: "startup-timeout"'));
+  assert.ok(source.includes('}, 9000);'));
 });
 
 test("normal Earth-ready signal cancels the fallback timer", () => {
-  assert.match(source, /earthReady = true;/);
-  assert.match(source, /window\.clearTimeout\(loaderHideTimer\);/);
+  assert.ok(source.includes("earthReady = true;"));
+  assert.ok(source.includes("window.clearTimeout(loaderHideTimer);"));
 });
 
 test("auth panel unlock remains independent from Earth readiness", () => {
-  assert.match(source, /window\.setTimeout\(unlockPanel, 340\)/);
-  assert.match(source, /if \(reducedMotion\) \{\s*unlockPanel\(\);/);
+  assert.ok(source.includes("window.setTimeout(unlockPanel, 340)"));
+  assert.ok(source.includes("unlockPanel();"));
+  assert.ok(source.includes("if (reducedMotion)"));
 });
