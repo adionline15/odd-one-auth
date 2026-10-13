@@ -84,6 +84,27 @@
     progress.style.transform = `scaleX(${ratio})`;
     const heroHeight = hero ? hero.offsetHeight : 1;
     root.style.setProperty("--hero-scroll", Math.min(scrollY / heroHeight, 1).toFixed(3));
+    const journeyProgress = max > 0 ? Math.min(Math.max(scrollY / max, 0), 1) : 0;
+    root.style.setProperty("--earth-scroll", journeyProgress.toFixed(3));
+
+    const closing = document.querySelector(".closing-section");
+    const closingRect = closing ? closing.getBoundingClientRect() : null;
+    const closingProgress = !reduceMotion && closingRect
+      ? Math.min(1, Math.max(0, (innerHeight - closingRect.top) / (innerHeight * 1.15))) : 0;
+    const heroProgress = hero ? Math.min(1, Math.max(0, scrollY / Math.max(1, heroHeight * .78))) : 1;
+    const earthOpacity = reduceMotion ? .88
+      : closingProgress > 0 ? .92 * Math.min(1, closingProgress * 2.6)
+      : .92 * (1 - heroProgress);
+    const earthStartLeft = innerWidth <= 920 ? 50 : 37;
+    root.style.setProperty("--earth-x", `${reduceMotion ? 72 : earthStartLeft + closingProgress * (72 - earthStartLeft)}vw`);
+    root.style.setProperty("--earth-y", `${reduceMotion ? 58 : 52 + closingProgress * 6}vh`);
+    
+    root.style.setProperty("--earth-opacity", earthOpacity.toFixed(3));
+    // Make the scale visibly track the journey: compact during the timeline, larger in the final chapter.
+    const scale = reduceMotion ? 1 : 0.74 + journeyProgress * 0.62 + closingProgress * 0.18;
+    root.style.setProperty("--earth-scale", scale.toFixed(3));
+    const earth = document.querySelector(".world-globe");
+    if (earth) earth.dataset.closingProgress = closingProgress.toFixed(3);
     scrollRaf = 0;
   };
   window.addEventListener("scroll", () => {

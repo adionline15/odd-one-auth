@@ -220,3 +220,458 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
 .world-globe-grid { position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(0deg,transparent 0 9.7%,#a8d8ff18 10% 10.15%,transparent 10.4% 19.5%),repeating-linear-gradient(90deg,transparent 0 9.7%,#a8d8ff17 10% 10.15%,transparent 10.4% 19.5%);mask-image:radial-gradient(circle,#000 57%,transparent 72%); }
 .world-globe-shine { background:linear-gradient(112deg,transparent 15%,#a7d7ff1c 35%,transparent 57%),linear-gradient(90deg,transparent 45%,#01030ab0 100%); }
 @media(max-width:920px){.world-globe-land{opacity:.7}.world-globe-grid{opacity:.45}}
+
+
+/* Real WebGL Earth: interactive globe canvas with a graceful CSS fallback */
+.world-globe { overflow: visible; background: transparent; box-shadow: none; }
+.world-globe > .world-globe-land,
+.world-globe > .world-globe-grid,
+.world-globe > .world-globe-shine,
+.world-globe:before,
+.world-globe:after { display: none; }
+.earth-webgl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; border-radius: 50%; cursor: grab; touch-action: pan-y; }
+.earth-webgl:active { cursor: grabbing; }
+.world-globe.has-3d-earth { filter: drop-shadow(0 0 35px #2563eb20); }
+.world-globe.earth-css-fallback { overflow: hidden; background: radial-gradient(circle at 34% 28%,#3478b9 0%,#174879 25%,#0a2444 56%,#030711 78%); box-shadow: inset -60px -16px 100px #01030af2,inset 14px 12px 42px #a8d8ff30,0 0 110px #1d4ed83b; }
+.world-globe.earth-css-fallback .world-globe-land,
+.world-globe.earth-css-fallback .world-globe-grid,
+.world-globe.earth-css-fallback .world-globe-shine { display: block; }
+@media (prefers-reduced-motion: reduce) {
+  .earth-webgl { display: none; }
+  .world-globe { overflow: hidden; background: radial-gradient(circle at 34% 28%,#3478b9 0%,#174879 25%,#0a2444 56%,#030711 78%); }
+  .world-globe .world-globe-land,.world-globe .world-globe-grid,.world-globe .world-globe-shine { display: block; }
+}
+
+
+/* Cinematic scale pass: make the 3D planet the hero, not a small background ornament */
+@media (min-width: 921px) {
+  .hero {
+    min-height: 100svh;
+    overflow: hidden;
+    padding-left: 6vw;
+    padding-right: 5vw;
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 420px);
+    gap: 2vw;
+    background:
+      radial-gradient(ellipse at 34% 47%, #123f7a30 0%, transparent 48%),
+      linear-gradient(90deg, #05070b00 0%, #05070b00 38%, #05070b72 65%, #05070b 100%),
+      #05070b;
+  }
+  .world-globe {
+    left: -5.5%;
+    top: 51%;
+    width: min(60vw, 900px);
+    opacity: 1;
+    z-index: 0;
+    filter: drop-shadow(0 0 52px #2563eb30);
+  }
+  .world-globe.has-3d-earth {
+    filter: drop-shadow(0 0 55px #2563eb35) drop-shadow(0 0 120px #1d4ed81c);
+  }
+  .world-globe:before {
+    display: block;
+    content: "";
+    position: absolute;
+    inset: -2.5%;
+    border: 1px solid #60a5fa1b;
+    border-radius: 50%;
+    transform: rotate(-18deg) scaleY(.34);
+    pointer-events: none;
+  }
+  .world-globe:after {
+    display: block;
+    content: "";
+    position: absolute;
+    inset: -5%;
+    border: 1px solid #60a5fa13;
+    border-radius: 50%;
+    transform: rotate(31deg) scaleY(.48);
+    pointer-events: none;
+  }
+  .hero-copy {
+    max-width: 480px;
+    align-self: center;
+    padding-top: 0;
+  }
+  .hero-copy .eyebrow { color: #c2d7f5; }
+  .hero-copy h1 {
+    font-size: clamp(64px, 6.6vw, 104px);
+    text-shadow: 0 3px 35px #05070be8;
+  }
+  .hero-intro {
+    max-width: 365px;
+    font-size: 14px;
+    color: #c0c9d7;
+    text-shadow: 0 2px 18px #05070b;
+  }
+  .auth-panel {
+    max-width: 420px;
+    border-color: #60a5fa55;
+    background: linear-gradient(145deg, #0a1220f5, #070b13f7);
+    box-shadow: 0 30px 110px #000b, 0 0 45px #1d4ed80b, inset 0 1px #bfdbfe0b;
+    backdrop-filter: blur(24px);
+  }
+}
+@media (min-width: 1400px) {
+  .world-globe { left: -1%; width: min(60vw, 1050px); }
+}
+@media (max-width: 920px) {
+  .world-globe {
+    width: min(94vw, 650px);
+    left: 50%;
+    top: 31%;
+    opacity: 1;
+  }
+  .world-globe.has-3d-earth {
+    filter: drop-shadow(0 0 36px #2563eb30);
+  }
+}
+@media (max-width: 620px) {
+  .world-globe { width: 104vw; top: 27%; opacity: .72; }
+  .hero-copy h1 { text-shadow: 0 3px 24px #05070b; }
+}
+
+
+/* Keep the Earth clear of the wordmark and header area */
+@media (min-width: 921px) {
+  .world-globe {
+    top: 61%;
+    left: 0%;
+    width: min(56vw, 820px);
+  }
+}
+@media (min-width: 1400px) {
+  .world-globe {
+    top: 60%;
+    left: 1%;
+    width: min(54vw, 940px);
+  }
+}
+
+
+/* Scroll cinema: keep the Earth viewport-centered and let it grow with the journey */
+:root { --earth-scroll: 0; }
+.hero { overflow: visible !important; }
+.world-globe {
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: clamp(440px, 56vw, 820px) !important;
+  aspect-ratio: 1;
+  height: auto !important;
+  transform: translate(-50%, -50%) scale(calc(.76 + var(--earth-scroll, 0) * .86)) !important;
+  transform-origin: center;
+  transition: opacity .2s linear;
+  z-index: 0 !important;
+  will-change: transform;
+}
+.hero { background: radial-gradient(ellipse at 50% 48%, #123f7a2b 0%, transparent 58%), #05070b !important; }
+.timeline-section {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(180deg, #090d14e8, #090d14d9) !important;
+}
+.closing-section {
+  position: relative;
+  z-index: 1;
+  background: radial-gradient(ellipse at 50% 48%, #0b1a2dc9, #05070bf0 75%) !important;
+}
+.hero-copy, .auth-panel, .hero-footnote, .topbar { z-index: 3; }
+@media (min-width: 921px) {
+  .world-globe { width: clamp(480px, 56vw, 820px) !important; }
+}
+@media (max-width: 920px) {
+  .world-globe {
+    width: 105vw !important;
+    transform: translate(-50%, -50%) scale(calc(.58 + var(--earth-scroll, 0) * .52)) !important;
+  }
+  .hero { overflow: visible !important; }
+}
+@media (max-width: 620px) {
+  .world-globe {
+    width: 118vw !important;
+    transform: translate(-50%, -50%) scale(calc(.52 + var(--earth-scroll, 0) * .45)) !important;
+  }
+  .timeline-section { background: linear-gradient(180deg, #090d14ee, #090d14e8) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-globe { position: absolute !important; transform: translate(-50%, -50%) !important; }
+}
+
+
+/* India-focus pass: keep the WebGL Earth clipped to its circular silhouette. */
+.world-globe {
+  overflow: hidden !important;
+  isolation: isolate;
+  border-radius: 50%;
+}
+.world-globe.has-3d-earth {
+  background: #030914;
+  box-shadow: 0 0 80px #2563eb22, inset -24px -8px 60px #01040b70;
+}
+.world-globe.has-3d-earth > .earth-webgl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+.world-globe.has-3d-earth::before,
+.world-globe.has-3d-earth::after {
+  display: none !important;
+}
+
+
+/* Fix the actual scroll scene: section overlays were hiding the fixed WebGL planet. */
+.timeline-section {
+  background: linear-gradient(180deg, #090d14b8, #090d14a8) !important;
+}
+.closing-section {
+  background: radial-gradient(ellipse at 50% 48%, #0b1a2d80, #05070b9c 78%) !important;
+}
+.closing-orbit {
+  opacity: .18 !important;
+}
+.world-globe {
+  z-index: 0 !important;
+}
+.timeline-section, .closing-section {
+  isolation: isolate;
+}
+
+
+/* Performance pass: avoid large blur filters and oversized GPU surfaces. */
+.world-globe,
+.world-globe.has-3d-earth {
+  filter: none !important;
+  box-shadow: 0 0 36px #2563eb18, inset -20px -8px 42px #01040b60 !important;
+  contain: layout paint style;
+}
+.world-globe {
+  transform: translate(-50%, -50%) scale(calc(.78 + var(--earth-scroll, 0) * .30)) !important;
+}
+@media (max-width: 920px) {
+  .world-globe {
+    transform: translate(-50%, -50%) scale(calc(.62 + var(--earth-scroll, 0) * .18)) !important;
+  }
+}
+@media (max-width: 620px) {
+  .world-globe {
+    transform: translate(-50%, -50%) scale(calc(.56 + var(--earth-scroll, 0) * .12)) !important;
+  }
+}
+.auth-panel {
+  backdrop-filter: blur(12px);
+}
+
+/* Readability and focus refinements */
+.hero-intro { color: #d0d5df !important; max-width: 330px; text-shadow: 0 2px 18px #05070b; }
+.auth-card .sub { color: #c4cbd7 !important; }
+.auth-card input::placeholder { color: #9aa7b8 !important; opacity: 1; }
+.auth-panel-head, .auth-panel-foot, .terms, .secure { color: #b7c2d2 !important; opacity: 1 !important; }
+.topnav a { color: #d0d7e2; }
+.topnav a:hover, .topnav a:focus-visible { color: #fff; text-decoration: underline; text-decoration-color: #60a5fa; text-underline-offset: 6px; }
+.submit { background: linear-gradient(110deg, #2563eb, #3b82f6 52%, #60a5fa) !important; color: #fff !important; border-color: #60a5fa !important; box-shadow: 0 8px 24px #2563eb2e; }
+@media (min-width: 921px) { .hero-copy { max-width: 430px; } .hero-intro { max-width: 310px; } }
+
+
+/* Final hierarchy and contrast pass */
+.world-globe {
+  left: 42% !important;
+}
+@media (max-width: 920px) {
+  .world-globe { left: 50% !important; }
+}
+.auth-index,
+.auth-panel-head,
+.auth-panel-foot,
+.terms,
+.secure,
+.eyebrow {
+  color: #c4cedd !important;
+  opacity: 1 !important;
+}
+.auth-index { letter-spacing: .12em; }
+.eyebrow { color: #d0d9e8 !important; }
+.auth-card input::placeholder { color: #b0bdce !important; opacity: 1; }
+.auth-panel {
+  background: linear-gradient(145deg, #07101df5, #050a13fa) !important;
+  border-color: #6b9edb55 !important;
+}
+.hero-copy::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -10% -16% -12% -8%;
+  background: radial-gradient(ellipse at 35% 50%, #05070be8 0%, #05070bbd 54%, transparent 100%);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-globe { transition: none !important; }
+}
+
+
+/* Focused globe/card separation and WCAG-oriented secondary text contrast */
+.auth-panel {
+  background: linear-gradient(145deg, rgba(7, 13, 23, .97), rgba(5, 9, 16, .985)) !important;
+  backdrop-filter: blur(18px) saturate(115%);
+  -webkit-backdrop-filter: blur(18px) saturate(115%);
+  border-color: rgba(130, 166, 211, .38);
+}
+.auth-card .sub,
+.auth-card input::placeholder,
+.auth-index,
+.auth-panel-head,
+.auth-panel-foot,
+.terms,
+.secure,
+.or,
+.scroll-note,
+.scene-coordinate,
+.chapter-tag {
+  color: #c5cfde !important;
+  opacity: 1 !important;
+}
+.auth-card input::placeholder { color: #b8c5d6 !important; }
+
+
+/* Closing chapter: the same Earth canvas travels into the final composition. */
+:root { --earth-left: 37%; --earth-top: 52%; --earth-size: min(66vw, 900px); --earth-opacity: .92; }
+.world-globe {
+  position: fixed !important; left: var(--earth-left) !important; top: var(--earth-top) !important;
+  width: var(--earth-size) !important; opacity: var(--earth-opacity) !important;
+  transform: translate(-50%, -50%) !important; transition: opacity .18s linear;
+  will-change: left, top, width, opacity;
+}
+@media (max-width: 920px) { :root { --earth-left: 50%; --earth-top: 32%; --earth-size: 105vw; } }
+@media (max-width: 620px) { :root { --earth-top: 28%; --earth-size: 118vw; } }
+.closing-section {
+  isolation: isolate;
+  background: linear-gradient(90deg,#05070b 0%,#05070bef 27%,#05070b9c 55%,#05070b48 100%),
+    radial-gradient(ellipse at 76% 55%,#123c773d,transparent 48%),#05070b !important;
+}
+.closing-section::before {
+  content:""; position:absolute; z-index:0; pointer-events:none; inset:-90px 0 auto; height:150px;
+  background:linear-gradient(180deg,#080b11 0%,#080b11b0 30%,transparent 100%);
+}
+.closing-section > .eyebrow,.closing-section > h2,.closing-section > p:not(.eyebrow),
+.closing-section > .primary-link,.closing-section > footer { z-index:2; }
+.closing-section .eyebrow { color:#d2e2fa !important; }
+.closing-section > p:not(.eyebrow) { color:#d0d8e5 !important; }
+.closing-orbit { opacity:.08 !important; animation:none !important; }
+.closing-cta {
+  background:linear-gradient(110deg,#2563eb,#3b82f6 52%,#60a5fa) !important;
+  color:#fff !important; border:1px solid #60a5fa !important; border-radius:3px !important;
+  box-shadow:0 8px 24px #2563eb35; gap:24px;
+}
+.closing-cta span { transition:transform .22s ease; }
+.closing-cta:hover,.closing-cta:focus-visible {
+  background:#dbeafe !important; border-color:#dbeafe !important; color:#071225 !important;
+  box-shadow:0 10px 30px #2563eb50;
+}
+.closing-cta:hover span,.closing-cta:focus-visible span { transform:translate(3px,-2px); }
+.closing-cta:focus-visible { outline:2px solid #dbeafe; outline-offset:4px; }
+.earth-city-marker {
+  position:absolute; z-index:4; left:50%; top:50%; display:flex; align-items:center; gap:5px;
+  white-space:nowrap; color:#dbeafe; font:600 9px/1 "DM Sans",sans-serif; letter-spacing:.04em;
+  text-shadow:0 1px 8px #020711; pointer-events:none; opacity:0; transition:opacity .18s ease;
+}
+.earth-city-marker::before {
+  content:""; width:5px; height:5px; flex:0 0 5px; border-radius:50%;
+  background:#bfdbfe; box-shadow:0 0 0 3px #60a5fa2b,0 0 12px #60a5fa;
+}
+.world-globe.show-city-markers .earth-city-marker { opacity:1; }
+.world-globe .earth-webgl { z-index:1; }
+@media (max-width:620px) {
+  .earth-city-marker { font-size:8px; }
+  .closing-section { background:linear-gradient(90deg,#05070bf5,#05070bd9 62%,#05070b80),#05070b !important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .world-globe,.closing-cta span { transition:none !important; }
+  .closing-section::before { height:110px; }
+}
+
+
+/* Verified follow-up: keep the shared WebGL Earth above section paint layers. */
+.world-globe,
+.world-globe.has-3d-earth {
+  z-index: 1 !important;
+  pointer-events: auto;
+}
+.timeline-section {
+  background: linear-gradient(180deg, rgba(7, 11, 18, .72) 0%, rgba(7, 11, 18, .58) 76%, rgba(5, 7, 11, .92) 100%) !important;
+}
+.closing-section {
+  background:
+    linear-gradient(90deg, rgba(5,7,11,.97) 0%, rgba(5,7,11,.92) 34%, rgba(5,7,11,.36) 67%, rgba(5,7,11,.12) 100%),
+    radial-gradient(ellipse at 76% 52%, rgba(37,99,235,.20), transparent 52%),
+    #05070b !important;
+}
+.closing-section::before {
+  height: 190px !important;
+  background: linear-gradient(180deg, rgba(5,7,11,0) 0%, rgba(5,7,11,.34) 34%, rgba(5,7,11,.84) 78%, rgba(5,7,11,0) 100%) !important;
+}
+.closing-section > .eyebrow,
+.closing-section > h2,
+.closing-section > p:not(.eyebrow),
+.closing-section > .primary-link,
+.closing-section > footer { position: relative; z-index: 3 !important; }
+.world-globe canvas { position: relative; z-index: 1; }
+@media (max-width: 920px) {
+  .closing-section { background: linear-gradient(90deg,rgba(5,7,11,.96),rgba(5,7,11,.70) 58%,rgba(5,7,11,.24)), radial-gradient(ellipse at 75% 50%,rgba(37,99,235,.18),transparent 56%),#05070b !important; }
+}
+
+
+/* Scroll-driven Earth scale: one authoritative transform rule (prevents older overrides winning). */
+:root { --earth-scale: .76; }
+.world-globe,
+.world-globe.has-3d-earth {
+  transform: translate(-50%, -50%) scale(var(--earth-scale, .76)) !important;
+  transform-origin: center center !important;
+}
+@media (max-width: 920px) {
+  .world-globe,
+  .world-globe.has-3d-earth {
+    transform: translate(-50%, -50%) scale(var(--earth-scale, .76)) !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-globe,
+  .world-globe.has-3d-earth {
+    transform: translate(-50%, -50%) scale(1) !important;
+  }
+}
+
+
+/* No city-name overlays on the Earth: keep the globe clean and cinematic. */
+.earth-city-marker,
+.world-globe.show-city-markers .earth-city-marker {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+
+/* Performance: scroll animation uses compositor transforms, not layout-affecting left/top/width. */
+.world-globe,
+.world-globe.has-3d-earth {
+  left: 0 !important;
+  top: 0 !important;
+  width: min(66vw, 900px) !important;
+  max-width: none !important;
+  transition: none !important;
+  transform: translate3d(var(--earth-x, 37vw), var(--earth-y, 52vh), 0) translate(-50%, -50%) scale(var(--earth-scale, .76)) !important;
+  will-change: transform, opacity;
+  contain: layout paint;
+}
+@media (max-width: 920px) {
+  .world-globe,
+  .world-globe.has-3d-earth { width: 105vw !important; }
+}
+@media (max-width: 620px) {
+  .world-globe,
+  .world-globe.has-3d-earth { width: 118vw !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-globe,
+  .world-globe.has-3d-earth { transform: translate3d(72vw,58vh,0) translate(-50%,-50%) scale(1) !important; }
+}
