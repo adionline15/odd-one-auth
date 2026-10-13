@@ -8,6 +8,8 @@
   const progress = document.getElementById("earth-progress");
   const bar = document.getElementById("earth-progress-bar");
   const totalBytes = 512606 + 336774 + 223421 + 226113;
+  let earthReady = false;
+  let loaderHideTimer = 0;
 
   const formatBytes = value => {
     if (value < 1024) return value + " B";
@@ -42,6 +44,8 @@
   });
 
   document.addEventListener("oddone:earthready", event => {
+    earthReady = true;
+    window.clearTimeout(loaderHideTimer);
     const data = event.detail || {};
     body.classList.add("earth-ready");
     if (label) label.textContent = data.fallback ? "Earth scene fallback" : "Earth textures ready";
@@ -55,11 +59,22 @@
         loader.hidden = true;
       } else {
         loader.classList.add("is-complete");
-        window.setTimeout(() => { loader.hidden = true; }, 420);
+        loaderHideTimer = window.setTimeout(() => { loader.hidden = true; }, 420);
       }
     }
   });
 
-  // If the WebGL module cannot initialise at all, its catch path signals fallback.
+  // If the module CDN stalls or never resolves, keep the login usable and show the
+  // lightweight CSS Earth instead of leaving a permanent loading badge on screen.
+  window.setTimeout(() => {
+    if (earthReady) return;
+    body.classList.add("earth-ready");
+    const globe = document.querySelector(".world-globe");
+    if (globe && !globe.classList.contains("has-3d-earth")) globe.classList.add("earth-css-fallback");
+    document.dispatchEvent(new CustomEvent("oddone:earthready", {
+      detail: { fallback: true, failedAssets: 4, reason: "startup-timeout" }
+    }));
+  }, 9000);
+
   // Keep the login page independent from Earth loading so auth never waits on textures.
 })();
