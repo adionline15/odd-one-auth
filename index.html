@@ -4,97 +4,71 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#05070b">
-  <meta name="description" content="Explore India's living history through an immersive Odd-One experience. Sign in to continue to the map.">
-  <title>Odd-One — A new perspective on place</title>
+  <meta name="description" content="Odd-One — see India differently.">
+  <title>Odd-One — Enter the map</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script defer src="auth.js"></script>
-  <script defer src="motion.js"></script>
   <script type="module" src="scene3d.js"></script>
 </head>
 <body>
   <div class="ambient-grid" aria-hidden="true"></div>
-  <div class="grain" aria-hidden="true"></div>
   <div class="world-globe" aria-hidden="true"><div class="world-globe-land"></div><div class="world-globe-grid"></div><div class="world-globe-shine"></div></div>
+  <div class="edge-shade" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
 
   <header class="topbar">
-    <a class="brand" href="#top" aria-label="odd-one.in home">odd-one<span>.in</span></a>
-    <nav class="topnav" aria-label="Main navigation">
-      <a href="#chapters">Explore</a>
-      <a href="#about">Our perspective</a>
-    </nav>
-    <a class="nav-cta" href="#access">Sign in <span aria-hidden="true">↗</span></a>
+    <a class="brand" href="#" aria-label="odd-one.in home">odd-one<span>.in</span></a>
+    <div class="top-meta"><span class="live-dot"></span> A NEW PERSPECTIVE ON INDIA</div>
+    <a class="top-link" href="https://www.odd-one.in/" target="_blank" rel="noreferrer">About Odd-One <span>↗</span></a>
   </header>
 
-  <main id="top">
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <p class="eyebrow"><span class="eyebrow-line"></span> PLACE IS NEVER JUST A POINT</p>
-        <h1 id="hero-title">The world,<br>seen <em>differently.</em></h1>
-        <p class="hero-intro">Every road holds a story. Every place changes what comes next. Odd-One connects the geography of India with the journeys that shape it.</p>
-        <div class="hero-actions">
-          <a class="primary-link" href="#chapters">Explore the perspective <span aria-hidden="true">↓</span></a>
-          <span class="scroll-note"><span class="scroll-dot"></span> SCROLL TO GO DEEPER</span>
+  <main class="login-stage">
+    <section class="story" aria-label="Odd-One introduction">
+      <div class="eyebrow"><span></span> GEOGRAPHY, REIMAGINED</div>
+      <h1>The world is<br>more than <em>a map.</em></h1>
+      <p class="story-copy">A new way to see India — its places, its connections, and the details that traditional maps miss.</p>
+      <div class="story-bottom">
+        <div class="coordinates"><span class="coord-mark">⌖</span><div><b>20°35'37.3"N</b><small>78°57'46.4"E · INDIA</small></div></div>
+        <div class="orbit-note"><span class="orbit-line"></span><span>LOOK CLOSER<br>GO FURTHER</span></div>
+      </div>
+    </section>
+
+    <aside class="auth-panel" id="access" aria-labelledby="title">
+      <div class="panel-top"><div class="panel-status"><span class="live-dot"></span> YOUR ATLAS AWAITS</div><span class="panel-code">OD / 001</span></div>
+      <div class="auth-card">
+        <div class="card-mark" aria-hidden="true"><span>o</span><i></i></div>
+        <p class="kicker">WELCOME TO ODD-ONE</p>
+        <h2 id="title">Step into the story.</h2>
+        <p class="sub" id="subtitle">Sign in to explore the map and discover what connects every place.</p>
+
+        <button id="google" class="google" type="button"><span class="google-mark" aria-hidden="true">G</span> Continue with Google <span class="button-arrow" aria-hidden="true">↗</span></button>
+        <div class="or"><span></span> OR CONTINUE WITH EMAIL <span></span></div>
+
+        <div class="tabs" role="tablist" aria-label="Account access">
+          <button id="login-tab" class="selected" type="button" role="tab" aria-selected="true">Sign in</button>
+          <button id="signup-tab" type="button" role="tab" aria-selected="false">Create account</button>
         </div>
-        <div class="hero-proof"><span class="proof-line"></span><span>GEOGRAPHY, HISTORY & WHAT CONNECTS US</span></div>
-      </div>
 
-      <aside class="auth-panel" id="access" aria-labelledby="title">
-        <div class="auth-panel-head"><span class="live-indicator"></span><span>YOUR NEXT JOURNEY</span><span class="auth-index">OD / 001</span></div>
-        <div class="auth-card">
-          <p class="kicker">WELCOME TO ODD-ONE</p>
-          <h2 id="title">Step into the story.</h2>
-          <p class="sub" id="subtitle">Sign in to explore the map and discover the places that shaped India.</p>
-          <button id="google" class="google" type="button"><span class="google-mark" aria-hidden="true">G</span> Continue with Google <span class="button-arrow" aria-hidden="true">↗</span></button>
-          <div class="or"><span></span> OR CONTINUE WITH EMAIL <span></span></div>
-          <div class="tabs" role="tablist" aria-label="Account access">
-            <button id="login-tab" class="selected" type="button" role="tab" aria-selected="true">Sign in</button>
-            <button id="signup-tab" type="button" role="tab" aria-selected="false">Create account</button>
-          </div>
-          <form id="form" novalidate>
-            <label for="email">Email address</label>
-            <input id="email" type="email" autocomplete="email" placeholder="you@example.com" required>
-            <div class="pass-label"><label for="password">Password</label><button id="forgot" type="button" class="link">Forgot password?</button></div>
-            <div class="pass"><input id="password" type="password" autocomplete="current-password" placeholder="Enter your password" minlength="8" required><button id="toggle" type="button" aria-label="Show password">Show</button></div>
-            <div id="confirm-wrap" hidden><label for="confirm">Confirm password</label><div class="pass"><input id="confirm" type="password" minlength="8" autocomplete="new-password" placeholder="Repeat your password"><button id="toggle-confirm" type="button" aria-label="Show confirmation password">Show</button></div></div>
-            <p id="status" role="status" aria-live="polite"></p>
-            <button id="submit" class="submit" type="submit"><span id="submit-label">Sign in securely</span><b aria-hidden="true">↗</b></button>
-          </form>
-          <p class="terms">By continuing, you agree to our <a href="https://www.odd-one.in/">Terms</a> and <a href="https://www.odd-one.in/">Privacy Policy</a>.</p>
-          <p class="secure"><span aria-hidden="true">◇</span> Your journey. Your account. Securely yours.</p>
-        </div>
-        <div class="auth-panel-foot"><span>INDIA, THROUGH TIME</span><span>PRIVATE BY DESIGN</span></div>
-      </aside>
-      <div class="hero-footnote"><span>ODD-ONE / A NEW WAY TO EXPLORE</span><span>01 — THE BIGGER PICTURE</span></div>
-    </section>
-
-    <section class="timeline-section" id="chapters" aria-labelledby="timeline-title">
-      <div class="section-heading">
-        <div><p class="eyebrow"><span class="eyebrow-line"></span> LANDSCAPES KEEP THEIR SECRETS</p><h2 id="timeline-title">A place is a point.<br><em>A story is a network.</em></h2></div>
-        <p class="section-intro">The world makes more sense when we look beyond coordinates. Explore the people, routes and ideas that connect one place to another.</p>
+        <form id="form" novalidate>
+          <label for="email">Email address</label>
+          <input id="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+          <div class="pass-label"><label for="password">Password</label><button id="forgot" type="button" class="link">Forgot password?</button></div>
+          <div class="pass"><input id="password" type="password" autocomplete="current-password" placeholder="Enter your password" minlength="8" required><button id="toggle" type="button" aria-label="Show password">Show</button></div>
+          <div id="confirm-wrap" hidden><label for="confirm">Confirm password</label><div class="pass"><input id="confirm" type="password" minlength="8" autocomplete="new-password" placeholder="Repeat your password"><button id="toggle-confirm" type="button" aria-label="Show confirmation password">Show</button></div></div>
+          <p id="status" role="status" aria-live="polite"></p>
+          <button id="submit" class="submit" type="submit"><span id="submit-label">Sign in securely</span><b aria-hidden="true">↗</b></button>
+        </form>
+        <p class="terms">By continuing, you agree to our <a href="https://www.odd-one.in/" target="_blank" rel="noreferrer">Terms</a> and <a href="https://www.odd-one.in/" target="_blank" rel="noreferrer">Privacy Policy</a>.</p>
       </div>
-      <div class="timeline-rail"><span>FOUR WINDOWS INTO THE PAST</span><span class="rail-line"></span><span>01 — 04</span></div>
-      <div class="era-grid">
-        <article class="era-card era-indus"><div class="era-art"><span class="era-number">01</span><div class="brick-city"><i></i><i></i><i></i><b></b><b></b></div><span class="art-caption">c. 2600 BCE</span></div><div class="era-copy"><p>THE FIRST CITIES</p><h3>Built to connect.</h3><span>Explore the urban ingenuity of the Indus Valley civilisation — its cities, craft and unanswered questions.</span></div></article>
-        <article class="era-card era-maurya"><div class="era-art"><span class="era-number">02</span><div class="pillar"><i></i><b></b><em></em></div><span class="art-caption">c. 3rd century BCE</span></div><div class="era-copy"><p>IDEAS & EMPIRES</p><h3>Power leaves a mark.</h3><span>Follow the rise of empires, the spread of ideas and the changing meaning of leadership.</span></div></article>
-        <article class="era-card era-classical"><div class="era-art"><span class="era-number">03</span><div class="arch"><i></i><b></b><em></em></div><span class="art-caption">c. 4th–6th century CE</span></div><div class="era-copy"><p>ART & DISCOVERY</p><h3>Ideas take form.</h3><span>Discover traditions of mathematics, literature, art and architecture across interconnected regions.</span></div></article>
-        <article class="era-card era-freedom"><div class="era-art"><span class="era-number">04</span><div class="horizon"><i></i><b></b><em></em></div><span class="art-caption">1857 — 1947</span></div><div class="era-copy"><p>THE ROAD TO FREEDOM</p><h3>A future imagined.</h3><span>Trace movements, people and events in the long and diverse struggle for independence.</span></div></article>
-      </div>
-      <p class="history-note">History is layered, debated and continually researched. These chapters are starting points — not the whole story.</p>
-    </section>
-
-    <section class="closing-section" id="about" aria-labelledby="closing-title">
-      <div class="closing-orbit" aria-hidden="true"></div>
-      <p class="eyebrow"><span class="eyebrow-line"></span> LOOK CLOSER</p>
-      <h2 id="closing-title">Every place<br>leaves a <em>trace.</em></h2>
-      <p>From a single street to a whole civilisation, location is only the beginning. The next chapter starts with the map.</p>
-      <a class="primary-link closing-cta" href="#access">Enter Odd-One <span aria-hidden="true">↗</span></a>
-      <footer><span>ODD-ONE.IN</span><span>BUILT TO EXPLORE WHAT CONNECTS US</span><a href="#top">BACK TO TOP ↑</a></footer>
-    </section>
+      <div class="panel-bottom"><span>PRIVATE BY DESIGN</span><span>BUILT TO EXPLORE <b>↗</b></span></div>
+    </aside>
   </main>
+
+  <footer class="site-footer"><span>ODD-ONE.IN © 2026</span><span>SEE THE CONNECTIONS OTHERS MISS</span><span class="footer-indicator"><i></i> SPATIAL ENGINE</span></footer>
 </body>
 </html>
