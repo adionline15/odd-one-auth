@@ -77,7 +77,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 /* Step 1 — cinematic entrance and non-blocking Earth loader */
 html.js body:not(.earth-ready) .world-globe{
   opacity:0;
-  transform:translate3d(var(--earth-x),var(--earth-y),0) translate(-50%,-50%) scale(calc(var(--earth-scale) * .965));
+  transform:translate3d(var(--earth-x),var(--earth-y),0) translate(-50%,-50%) scale(.965);
   transition:opacity .95s cubic-bezier(.2,.75,.2,1),transform 1.15s cubic-bezier(.2,.75,.2,1);
 }
 html.js body.earth-ready .world-globe,
@@ -115,7 +115,6 @@ body.login-revealed .story h1 .word{opacity:1;transform:translate3d(0,0,0)}
 @media(max-width:1100px){.earth-preloader{left:6vw}.site-footer{gap:10px}.texture-credit{font-size:6px;letter-spacing:.2px}}
 @media(max-width:780px){
   .earth-preloader{top:74px;left:22px}
-  .auth-panel{animation-delay:.22s}
   .site-footer{height:auto;min-height:43px;flex-wrap:wrap;row-gap:6px;padding-top:10px;padding-bottom:10px}
   .texture-credit{white-space:normal;max-width:100%;line-height:1.6}
 }
