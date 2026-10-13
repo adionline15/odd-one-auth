@@ -46,12 +46,12 @@
       const earthGroup = new THREE.Group();
       scene.add(earthGroup);
       const textureAssets = [
-        { path: "assets/earth/earth-color.jpg.b64", color: true, label: "Earth colour", encodedBytes: 694868 },
-        { path: "assets/earth/earth-normal.jpg.b64", color: false, label: "Earth normal", encodedBytes: 456516 },
-        { path: "assets/earth/earth-specular.jpg.b64", color: false, label: "Earth specular", encodedBytes: 302861 },
-        { path: "assets/earth/earth-clouds.png.b64", color: true, label: "Earth clouds", encodedBytes: 306509 }
+        { path: "assets/earth/earth-color.jpg.b64", color: true, label: "Earth colour", encodedBytes: 512606 },
+        { path: "assets/earth/earth-normal.jpg.b64", color: false, label: "Earth normal", encodedBytes: 336774 },
+        { path: "assets/earth/earth-specular.jpg.b64", color: false, label: "Earth specular", encodedBytes: 223421 },
+        { path: "assets/earth/earth-clouds.png.b64", color: true, label: "Earth clouds", encodedBytes: 226113 }
       ];
-      const expectedTextureBytes = Math.round(textureAssets.reduce((sum, asset) => sum + asset.encodedBytes, 0) * 0.75);
+      const expectedTextureBytes = textureAssets.reduce((sum, asset) => sum + asset.encodedBytes, 0);
       let loadedTextureBytes = 0;
       const publishTextureProgress = (asset, bytes) => {
         loadedTextureBytes += bytes;
