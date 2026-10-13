@@ -37,7 +37,9 @@ test("hero Earth has 30fps idle and 60fps active pacing", () => {
 });
 
 test("Earth assets are same-origin and progress is byte-based", () => {
-  assert.match(earth, /assets\/earth\/earth-color\.jpg\.b64/);
+  assert.match(earth, /assets\\/earth\\/earth-color\\.jpg"/);
+  assert.match(earth, /response\\.arrayBuffer\\(\\)/);
+  assert.doesNotMatch(earth, /\\.b64/);
   assert.match(earth, /loadedBytes: loadedTextureBytes/);
   assert.match(earth, /bytes\.byteLength/);
   assert.doesNotMatch(earth, /threejs\.org\/examples\/textures\/planets/);
