@@ -100,6 +100,9 @@
     root.style.setProperty("--earth-top", reduceMotion ? "58%" : `${52 + closingProgress * 6}%`);
     root.style.setProperty("--earth-size", reduceMotion ? "min(64vw, 860px)" : `min(${66 - closingProgress * 4}vw, 900px)`);
     root.style.setProperty("--earth-opacity", earthOpacity.toFixed(3));
+    // Make the scale visibly track the journey: compact during the timeline, larger in the final chapter.
+    const scale = reduceMotion ? 1 : 0.74 + journeyProgress * 0.62 + closingProgress * 0.18;
+    root.style.setProperty("--earth-scale", scale.toFixed(3));
     const earth = document.querySelector(".world-globe");
     if (earth) earth.dataset.closingProgress = closingProgress.toFixed(3);
     scrollRaf = 0;
