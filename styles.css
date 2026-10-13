@@ -649,3 +649,29 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
   display: none !important;
   opacity: 0 !important;
 }
+
+
+/* Performance: scroll animation uses compositor transforms, not layout-affecting left/top/width. */
+.world-globe,
+.world-globe.has-3d-earth {
+  left: 0 !important;
+  top: 0 !important;
+  width: min(66vw, 900px) !important;
+  max-width: none !important;
+  transition: none !important;
+  transform: translate3d(var(--earth-x, 37vw), var(--earth-y, 52vh), 0) translate(-50%, -50%) scale(var(--earth-scale, .76)) !important;
+  will-change: transform, opacity;
+  contain: layout paint;
+}
+@media (max-width: 920px) {
+  .world-globe,
+  .world-globe.has-3d-earth { width: 105vw !important; }
+}
+@media (max-width: 620px) {
+  .world-globe,
+  .world-globe.has-3d-earth { width: 118vw !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-globe,
+  .world-globe.has-3d-earth { transform: translate3d(72vw,58vh,0) translate(-50%,-50%) scale(1) !important; }
+}
