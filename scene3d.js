@@ -149,7 +149,7 @@
 
         let raf = 0;
         let disposed = false;
-        let scrollRotation = -1.75;
+        let scrollRotation = Math.PI;
         let lastFrameTime = 0;
         const clock = new THREE.Clock();
         const resize = () => {
@@ -169,22 +169,15 @@
           if (now - lastFrameTime < 33) return;
           lastFrameTime = now;
           const t = clock.getElapsedTime();
-          const scrollProgress = Math.min(1, Math.max(0, Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--earth-scroll')) || 0));
-          // The Three.js Earth texture places India's longitude ~168 degrees away from the camera-facing meridian.
-          // Smoothly reveal India as the globe grows, rather than applying an arbitrary small turn.
-          const focusProgress = scrollProgress * scrollProgress * (3 - 2 * scrollProgress);
-          // India is near 78°E; target a front-facing longitude turn, not a full half-orbit.
-          const indiaTurn = -focusProgress * 1.75;
-          scrollRotation += (indiaTurn - scrollRotation) * 0.045;
+          // Keep the globe locked on the India-facing orientation; no scroll-driven orbit.
+          scrollRotation = Math.PI;
           pointer.x += (pointer.tx - pointer.x) * 0.035;
           pointer.y += (pointer.ty - pointer.y) * 0.035;
-          if (!pointer.down) earth.rotation.y += 0.0018;
-          earth.rotation.x += (pointer.y * 0.2 - earth.rotation.x) * 0.018;
-          earth.rotation.y += pointer.x * 0.004;
-          earthGroup.rotation.y += (scrollRotation - earthGroup.rotation.y) * 0.08;
+          earth.rotation.x += (pointer.y * 0.06 - earth.rotation.x) * 0.018;
+          earthGroup.rotation.y = scrollRotation;
           const clouds = earthGroup.userData.clouds;
           if (clouds) {
-            clouds.rotation.y = earth.rotation.y + t * 0.0008;
+            clouds.rotation.y = earth.rotation.y;
             clouds.rotation.x = earth.rotation.x;
           }
           stars.rotation.y = t * 0.0005;
