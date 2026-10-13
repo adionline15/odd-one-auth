@@ -50,6 +50,17 @@
       const toClosing = smoothstep(closingProgress);
       const awayFromHero = smoothstep(heroProgress);
       const opacity = Math.max(0, (1 - awayFromHero) * 0.96, toClosing * 0.92);
+      if (reduceMotion) {
+        root.style.setProperty("--earth-x", "35vw");
+        root.style.setProperty("--earth-y", "52vh");
+        root.style.setProperty("--earth-scale", "0.92");
+        root.style.setProperty("--earth-opacity", "0.38");
+        root.style.setProperty("--closing-progress", "0");
+        earth.dataset.closingProgress = "0";
+        earth.dataset.heroProgress = "0";
+        scrollRaf = 0;
+        return;
+      }
       const mobile = window.innerWidth <= 820;
       const startX = mobile ? 54 : 35;
       const endX = mobile ? 79 : 76;
@@ -63,7 +74,7 @@
       root.style.setProperty("--earth-x", `${x}vw`);
       root.style.setProperty("--earth-y", `${y}vh`);
       root.style.setProperty("--earth-scale", scale.toFixed(3));
-      root.style.setProperty("--earth-opacity", reduceMotion ? "0.38" : opacity.toFixed(3));
+      root.style.setProperty("--earth-opacity", opacity.toFixed(3));
       root.style.setProperty("--closing-progress", toClosing.toFixed(3));
       earth.dataset.closingProgress = toClosing.toFixed(3);
       earth.dataset.heroProgress = heroProgress.toFixed(3);
