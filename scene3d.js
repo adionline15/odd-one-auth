@@ -134,11 +134,11 @@
         scene.add(stars);
 
         const cityMarkers = [
-        { name: 'Delhi', lat: 28.6139, lon: 77.2090 },
-        { name: 'Mumbai', lat: 19.0760, lon: 72.8777 },
-        { name: 'Chennai', lat: 13.0827, lon: 80.2707 },
-        { name: 'Kolkata', lat: 22.5726, lon: 88.3639 },
-        { name: 'Bengaluru', lat: 12.9716, lon: 77.5946 }
+        { name: 'Delhi', lat: 28.6139, lon: 77.2090, dx: 10, dy: -10 },
+        { name: 'Mumbai', lat: 19.0760, lon: 72.8777, dx: 10, dy: 4 },
+        { name: 'Chennai', lat: 13.0827, lon: 80.2707, dx: -12, dy: 15, align: 'left' },
+        { name: 'Kolkata', lat: 22.5726, lon: 88.3639, dx: 12, dy: -2 },
+        { name: 'Bengaluru', lat: 12.9716, lon: 77.5946, dx: 12, dy: 24 }
       ].map((city) => {
         const label = document.createElement('span');
         label.className = 'earth-city-marker';
@@ -165,11 +165,14 @@
           const front = y * sx + rz * cx;
           city.label.style.left = `${50 + rx * 43}%`;
           city.label.style.top = `${50 - ry * 43}%`;
+          city.label.style.transform = city.align === 'left'
+            ? `translate(calc(-100% - 8px + ${city.dx}px), calc(-50% + ${city.dy}px))`
+            : `translate(${city.dx}px, calc(-50% + ${city.dy}px))`;
           city.label.style.display = front > 0.08 ? 'flex' : 'none';
         });
         const closingProgress = Number(host.dataset.closingProgress || 0);
         host.classList.toggle('show-city-markers', closingProgress > 0.28 || reducedMotion);
-        camera.position.z = baseCameraZ - Math.min(1, Math.max(0, closingProgress)) * 0.24;
+        camera.position.z = baseCameraZ - Math.min(1, Math.max(0, closingProgress)) * 0.62;
       };
 
       const pointer = { x: 0, y: 0, down: false, lastX: 0, lastY: 0, lastInput: 0 };
