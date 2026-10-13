@@ -61,3 +61,15 @@ body.map-handoff-active .world-globe{opacity:0;pointer-events:none}
 .map-static-fallback a{display:inline-block;margin-top:12px;color:#c7d6ff;font-size:11px}
 body.map-unavailable .map-status{background:#21180d;color:#f2d5a2;border-color:#f0b85b55}
 @media(prefers-reduced-motion:reduce){.world-globe,#map{transition:none!important}}
+
+.earth-preloader{position:fixed;z-index:40;left:5.2vw;bottom:62px;width:min(290px,calc(100vw - 44px));padding:14px 15px;border:1px solid #ffffff1b;border-radius:8px;background:#060a13e8;backdrop-filter:blur(18px);transition:opacity .45s,transform .45s;pointer-events:none}
+.preloader-kicker,.earth-preloader b,.earth-preloader small{display:block;font-family:"DM Mono",monospace}
+.preloader-kicker{color:#8fa8d6;font-size:7px;letter-spacing:1.4px}
+.earth-preloader b{margin-top:8px;color:#e6edff;font-size:9px;font-weight:500}
+.preloader-track{height:2px;margin-top:10px;background:#ffffff16;overflow:hidden}
+.preloader-track i{display:block;width:0;height:100%;background:#9bb9ff;box-shadow:0 0 12px #9bb9ff;transition:width .15s linear}
+.earth-preloader small{margin-top:7px;color:#8291aa;font-size:7px;letter-spacing:.3px}
+.earth-preloader.is-complete{border-color:#a5e9cc3b}.earth-preloader.is-complete .preloader-track i{background:#a5e9cc}
+.earth-preloader.is-hidden{opacity:0;transform:translateY(8px)}
+@media(max-width:760px){.earth-preloader{left:20px;bottom:48px;width:min(260px,calc(100vw - 40px))}.story-footer span:nth-child(2){display:none}}
+@media(prefers-reduced-motion:reduce){.earth-preloader,.preloader-track i{transition:none}}
