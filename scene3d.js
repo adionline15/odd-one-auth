@@ -286,7 +286,7 @@
         };
         document.addEventListener("oddone:pauseEarth", onEarthPause);
         const heroSection = document.querySelector(".hero");
-        const closingSection = document.querySelector(".closing-section");
+        const closingSection = document.body.classList.contains("road-story") ? null : document.querySelector(".closing-section");
         const sceneVisibility = new IntersectionObserver(entries => {
           entries.forEach(entry => { entry.target.dataset.earthVisible = entry.isIntersecting ? "1" : "0"; });
           sectionActive = Boolean(
