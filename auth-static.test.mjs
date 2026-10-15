@@ -137,3 +137,10 @@ test('email whitespace is removed before sign-in and signup requests', () => {
   assert.match(auth, /signInWithPassword\(\{email:email\.value\.trim\(\),password:password\.value\}\)/);
   assert.match(auth, /signUp\(\{email:email\.value\.trim\(\),password:password\.value/);
 });
+
+
+test('unconfigured preview prevents provider calls and explains setup state', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /if\(!client\)return msg\("Authentication isn't configured yet\./);
+  assert.match(auth, /if\(configured\(\)&&window\.supabase\?\.createClient\)/);
+});
