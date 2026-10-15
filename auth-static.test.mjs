@@ -164,3 +164,12 @@ test('password visibility controls are non-submit buttons inside the form', () =
   assert.match(html, /id="toggle-confirm" type="button"/);
   assert.match(html, /id="submit" class="submit" type="submit"/);
 });
+
+
+test('email and password controls remain programmatically labelled', () => {
+  const html = read('./index.html');
+  assert.match(html, /<label for="email">Email address<\/label>/);
+  assert.match(html, /<label for="password">Password<\/label>/);
+  assert.match(html, /<label for="confirm">Confirm password<\/label>/);
+  assert.match(html, /id="status" role="status" aria-live="polite" aria-atomic="true"/);
+});
