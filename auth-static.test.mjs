@@ -115,3 +115,9 @@ test('pending authentication disables all competing auth actions and restores th
   assert.match(auth, /submit\.disabled=v;google\.disabled=v;forgot\.disabled=v/);
   assert.match(auth, /submitLabel\.textContent=v\?"Please wait…":label/);
 });
+
+
+test('password reset asks for an email before calling the provider', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /if\(!email\.value\.trim\(\)\)\{email\.focus\(\);return msg\("Enter your email address first\."\);\}/);
+});
