@@ -156,3 +156,11 @@ test('password reset response does not reveal whether an account exists', () => 
   const auth = read('./auth.js');
   assert.match(auth, /If an account exists for this address, a password-reset email will arrive shortly\./);
 });
+
+
+test('password visibility controls are non-submit buttons inside the form', () => {
+  const html = read('./index.html');
+  assert.match(html, /id="toggle" type="button"/);
+  assert.match(html, /id="toggle-confirm" type="button"/);
+  assert.match(html, /id="submit" class="submit" type="submit"/);
+});
