@@ -11,6 +11,8 @@ test('history-led auth page keeps login, signup and accessible status controls',
   assert.match(html, /aria-live="polite"/);
   assert.match(html, /id="confirm"/);
   assert.match(html, /id="access"/);
+  assert.match(html, /id="toggle" type="button" aria-label="Show password" aria-pressed="false" aria-controls="password"/);
+  assert.match(html, /id="toggle-confirm" type="button" aria-label="Show confirmation password" aria-pressed="false" aria-controls="confirm"/);
 });
 
 test('immersive India history sections are present before map access', () => {
