@@ -129,3 +129,11 @@ test('signup blocks mismatched passwords with an announced native validation err
   assert.match(auth, /confirm\.reportValidity\(\)/);
   assert.match(auth, /confirm\.setCustomValidity\(""\)/);
 });
+
+
+test('email whitespace is removed before sign-in and signup requests', () => {
+  const auth = read('./auth.js');
+  assert.equal((auth.match(/email\.value\.trim\(\)/g) || []).length >= 3, true);
+  assert.match(auth, /signInWithPassword\(\{email:email\.value\.trim\(\),password:password\.value\}\)/);
+  assert.match(auth, /signUp\(\{email:email\.value\.trim\(\),password:password\.value/);
+});
