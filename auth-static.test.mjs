@@ -150,3 +150,9 @@ test('form submission runs native validity checks before authentication', () => 
   const auth = read('./auth.js');
   assert.match(auth, /form\.onsubmit=async e=>\{e\.preventDefault\(\);msg\(""\);if\(!form\.reportValidity\(\)\)return/);
 });
+
+
+test('password reset response does not reveal whether an account exists', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /If an account exists for this address, a password-reset email will arrive shortly\./);
+});
