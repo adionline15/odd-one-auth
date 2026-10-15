@@ -108,3 +108,10 @@ test('login and signup tabs keep their selected state and password autocomplete 
   assert.match(auth, /\$\("login-tab"\)\.setAttribute\("aria-selected",String\(!s\)\)/);
   assert.match(auth, /\$\("signup-tab"\)\.setAttribute\("aria-selected",String\(s\)\)/);
 });
+
+
+test('pending authentication disables all competing auth actions and restores the mode label', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /submit\.disabled=v;google\.disabled=v;forgot\.disabled=v/);
+  assert.match(auth, /submitLabel\.textContent=v\?"Please wait…":label/);
+});
