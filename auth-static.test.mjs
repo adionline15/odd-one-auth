@@ -46,6 +46,8 @@ test('responsive and reduced motion styles exist', () => {
   const styles = read('./styles.css');
   assert.match(styles, /max-width:620px/);
   assert.match(styles, /prefers-reduced-motion:reduce/);
+  assert.match(styles, /a:focus-visible,[\\s\\S]*button:focus-visible,[\\s\\S]*input:focus-visible/);
+  assert.match(styles, /outline: 2px solid var\\(--gold-bright\\)/);
   assert.match(styles, /\.era-grid/);
 });
 
