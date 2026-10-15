@@ -97,3 +97,14 @@ test('password visibility controls expose their pressed state to assistive techn
   assert.match(auth, /button\.setAttribute\("aria-pressed","false"\)/);
   assert.match(auth, /button\.setAttribute\("aria-pressed",String\(show\)\)/);
 });
+
+
+test('login and signup tabs keep their selected state and password autocomplete mode synchronized', () => {
+  const html = read('./index.html');
+  const auth = read('./auth.js');
+  assert.match(html, /id="login-tab"[^>]*role="tab" aria-selected="true"/);
+  assert.match(html, /id="signup-tab"[^>]*role="tab" aria-selected="false"/);
+  assert.match(auth, /password\.autocomplete=s\?"new-password":"current-password"/);
+  assert.match(auth, /\$\("login-tab"\)\.setAttribute\("aria-selected",String\(!s\)\)/);
+  assert.match(auth, /\$\("signup-tab"\)\.setAttribute\("aria-selected",String\(s\)\)/);
+});
