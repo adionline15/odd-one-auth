@@ -83,3 +83,9 @@ test('progressive Three.js scene is loaded with a graceful SVG fallback', () => 
   assert.match(scene, /\.catch\(\(\) => canvas\.remove\(\)\)/);
   assert.match(styles, /\.monument-scene\.has-webgl \.india-mark/);
 });
+
+test('password visibility controls expose their pressed state to assistive technology', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /button\.setAttribute\("aria-pressed","false"\)/);
+  assert.match(auth, /button\.setAttribute\("aria-pressed",String\(show\)\)/);
+});
