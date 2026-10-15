@@ -12,6 +12,7 @@ test('history-led auth page keeps login, signup and accessible status controls',
   assert.match(html, /id="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false"/);
   assert.match(html, /id="confirm"/);
   assert.match(html, /id="access"/);
+  assert.match(html, /class="skip-link" href="#access">Skip to sign in<\\/a>/);
   assert.match(html, /id="form" aria-labelledby="title" novalidate/);
   assert.match(html, /id="status" role="status" aria-live="polite" aria-atomic="true"/);
   assert.match(html, /id="toggle" type="button" aria-label="Show password" aria-pressed="false" aria-controls="password"/);
