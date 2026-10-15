@@ -144,3 +144,9 @@ test('unconfigured preview prevents provider calls and explains setup state', ()
   assert.match(auth, /if\(!client\)return msg\("Authentication isn't configured yet\./);
   assert.match(auth, /if\(configured\(\)&&window\.supabase\?\.createClient\)/);
 });
+
+
+test('form submission runs native validity checks before authentication', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /form\.onsubmit=async e=>\{e\.preventDefault\(\);msg\(""\);if\(!form\.reportValidity\(\)\)return/);
+});
