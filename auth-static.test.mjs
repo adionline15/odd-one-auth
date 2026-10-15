@@ -121,3 +121,11 @@ test('password reset asks for an email before calling the provider', () => {
   const auth = read('./auth.js');
   assert.match(auth, /if\(!email\.value\.trim\(\)\)\{email\.focus\(\);return msg\("Enter your email address first\."\);\}/);
 });
+
+
+test('signup blocks mismatched passwords with an announced native validation error', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /confirm\.setCustomValidity\("Passwords do not match\."\)/);
+  assert.match(auth, /confirm\.reportValidity\(\)/);
+  assert.match(auth, /confirm\.setCustomValidity\(""\)/);
+});
