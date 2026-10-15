@@ -9,6 +9,7 @@ test('history-led auth page keeps login, signup and accessible status controls',
   assert.match(html, /id="login-tab"/);
   assert.match(html, /id="signup-tab"/);
   assert.match(html, /aria-live="polite"/);
+  assert.match(html, /id="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false"/);
   assert.match(html, /id="confirm"/);
   assert.match(html, /id="access"/);
   assert.match(html, /id="toggle" type="button" aria-label="Show password" aria-pressed="false" aria-controls="password"/);
