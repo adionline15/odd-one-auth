@@ -209,3 +209,10 @@ test('password reset prevents duplicate requests while a request is pending', ()
   assert.ok(auth.includes('forgot.disabled=true;'));
   assert.ok(auth.includes('finally{forgot.disabled=false}'));
 });
+
+
+test('pointer-driven motion is gated by reduced-motion and fine-pointer preferences', () => {
+  const motion = read('./motion.js');
+  assert.ok(motion.includes('prefers-reduced-motion: reduce'));
+  assert.ok(motion.includes('(hover: hover) and (pointer: fine)'));
+});
