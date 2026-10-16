@@ -173,3 +173,11 @@ test('email and password controls remain programmatically labelled', () => {
   assert.match(html, /<label for="confirm">Confirm password<\/label>/);
   assert.match(html, /id="status" role="status" aria-live="polite" aria-atomic="true"/);
 });
+
+
+test('reduced-motion preference disables animated reveal and decorative cursor effects', () => {
+  const styles = read('./styles.css');
+  assert.ok(styles.includes('@media (prefers-reduced-motion: reduce)'));
+  assert.ok(styles.includes('.cursor-glow { display:none; }'));
+  assert.ok(styles.includes('.motion-reveal { opacity:1; transform:none; transition:none; }'));
+});
