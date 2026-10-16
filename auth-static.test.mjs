@@ -223,3 +223,10 @@ test('scroll reveal falls back to visible content without IntersectionObserver',
   assert.ok(motion.includes('if ("IntersectionObserver" in window)'));
   assert.ok(motion.includes('revealItems.forEach(el => el.classList.add("is-visible"))'));
 });
+
+
+test('scroll progress updates are coalesced through requestAnimationFrame', () => {
+  const motion = read('./motion.js');
+  assert.ok(motion.includes('if (!scrollRaf) scrollRaf = requestAnimationFrame(updateScroll)'));
+  assert.ok(motion.includes('scrollRaf = 0;'));
+});
