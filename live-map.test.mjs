@@ -18,7 +18,7 @@ test("live map uses the exact approved MapLibre version", () => {
 test("map provides separate, toggleable vehicle, team, event and device GPS layers", () => {
   for (const id of ["toggle-vehicles", "toggle-teams", "toggle-events", "toggle-me"]) {
     assert.match(html, new RegExp('id="' + id + '"'));
-    assert.match(js, new RegExp('$("#' + id + '")'));
+    assert.ok(js.includes('$("#' + id + '")'), "missing control handler for " + id);
   }
   assert.match(js, /setLayerVisibility/);
   assert.match(js, /animateDemoFeed/);
