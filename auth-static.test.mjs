@@ -216,3 +216,10 @@ test('pointer-driven motion is gated by reduced-motion and fine-pointer preferen
   assert.ok(motion.includes('prefers-reduced-motion: reduce'));
   assert.ok(motion.includes('(hover: hover) and (pointer: fine)'));
 });
+
+
+test('scroll reveal falls back to visible content without IntersectionObserver', () => {
+  const motion = read('./motion.js');
+  assert.ok(motion.includes('if ("IntersectionObserver" in window)'));
+  assert.ok(motion.includes('revealItems.forEach(el => el.classList.add("is-visible"))'));
+});
