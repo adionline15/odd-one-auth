@@ -202,3 +202,10 @@ test('successful sign-in routes to the configured app destination', () => {
   assert.ok(auth.includes('location.assign(c.appUrl||"/")'));
   assert.ok(auth.includes('signInWithPassword'));
 });
+
+
+test('password reset prevents duplicate requests while a request is pending', () => {
+  const auth = read('./auth.js');
+  assert.ok(auth.includes('forgot.disabled=true;'));
+  assert.ok(auth.includes('finally{forgot.disabled=false}'));
+});
