@@ -183,11 +183,10 @@ test('reduced-motion preference disables animated reveal and decorative cursor e
 });
 
 
-test('signup mode requires confirmation and login mode clears that requirement', () => {
+test('signup mode requires confirmation and hides the confirmation field in login mode', () => {
   const auth = read('./auth.js');
   assert.ok(auth.includes('confirm.required=s;'));
-  assert.ok(auth.includes('confirm-wrap').toString() || auth.includes('confirm.required=s;'));
-  assert.ok(auth.includes('confirm-wrap').toString());
+  assert.ok(auth.includes('$("confirm-wrap").hidden=!s;'));
 });
 
 
