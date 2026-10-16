@@ -230,3 +230,11 @@ test('scroll progress updates are coalesced through requestAnimationFrame', () =
   assert.ok(motion.includes('if (!scrollRaf) scrollRaf = requestAnimationFrame(updateScroll)'));
   assert.ok(motion.includes('scrollRaf = 0;'));
 });
+
+
+test('interactive controls retain visible keyboard focus and narrow-screen layout rules', () => {
+  const styles = read('./styles.css');
+  assert.ok(styles.includes('a:focus-visible,\nbutton:focus-visible,\ninput:focus-visible'));
+  assert.ok(styles.includes('@media(max-width:370px)'));
+  assert.ok(styles.includes('@media(max-width:620px)'));
+});
