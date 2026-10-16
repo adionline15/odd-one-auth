@@ -181,3 +181,11 @@ test('reduced-motion preference disables animated reveal and decorative cursor e
   assert.ok(styles.includes('.cursor-glow { display:none; }'));
   assert.ok(styles.includes('.motion-reveal { opacity:1; transform:none; transition:none; }'));
 });
+
+
+test('signup mode requires confirmation and login mode clears that requirement', () => {
+  const auth = read('./auth.js');
+  assert.ok(auth.includes('confirm.required=s;'));
+  assert.ok(auth.includes('confirm-wrap').toString() || auth.includes('confirm.required=s;'));
+  assert.ok(auth.includes('confirm-wrap').toString());
+});
