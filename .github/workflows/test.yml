@@ -1,0 +1,26 @@
+name: Node.js smoke tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - phase-1/road-intelligence-story
+      - feature/live-map-gps-foundation
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Node.js tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run smoke tests
+        run: npm test
