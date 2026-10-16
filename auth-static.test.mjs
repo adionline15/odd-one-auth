@@ -9,8 +9,14 @@ test('history-led auth page keeps login, signup and accessible status controls',
   assert.match(html, /id="login-tab"/);
   assert.match(html, /id="signup-tab"/);
   assert.match(html, /aria-live="polite"/);
+  assert.match(html, /id="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false"/);
   assert.match(html, /id="confirm"/);
   assert.match(html, /id="access"/);
+  assert.ok(html.includes('class="skip-link" href="#access">Skip to sign in</a>'));
+  assert.match(html, /id="form" aria-labelledby="title" novalidate/);
+  assert.match(html, /id="status" role="status" aria-live="polite" aria-atomic="true"/);
+  assert.match(html, /id="toggle" type="button" aria-label="Show password" aria-pressed="false" aria-controls="password"/);
+  assert.match(html, /id="toggle-confirm" type="button" aria-label="Show confirmation password" aria-pressed="false" aria-controls="confirm"/);
 });
 
 test('immersive India history sections are present before map access', () => {
@@ -41,6 +47,8 @@ test('responsive and reduced motion styles exist', () => {
   const styles = read('./styles.css');
   assert.match(styles, /max-width:620px/);
   assert.match(styles, /prefers-reduced-motion:reduce/);
+  assert.match(styles, /a:focus-visible,[\s\S]*button:focus-visible,[\s\S]*input:focus-visible/);
+  assert.match(styles, /outline: 2px solid var\(--gold-bright\)/);
   assert.match(styles, /\.era-grid/);
 });
 
@@ -82,4 +90,150 @@ test('progressive Three.js scene is loaded with a graceful SVG fallback', () => 
   assert.match(scene, /prefers-reduced-motion/);
   assert.match(scene, /\.catch\(\(\) => canvas\.remove\(\)\)/);
   assert.match(styles, /\.monument-scene\.has-webgl \.india-mark/);
+});
+
+test('password visibility controls expose their pressed state to assistive technology', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /button\.setAttribute\("aria-pressed","false"\)/);
+  assert.match(auth, /button\.setAttribute\("aria-pressed",String\(show\)\)/);
+});
+
+
+test('login and signup tabs keep their selected state and password autocomplete mode synchronized', () => {
+  const html = read('./index.html');
+  const auth = read('./auth.js');
+  assert.match(html, /id="login-tab"[^>]*role="tab" aria-selected="true"/);
+  assert.match(html, /id="signup-tab"[^>]*role="tab" aria-selected="false"/);
+  assert.match(auth, /password\.autocomplete=s\?"new-password":"current-password"/);
+  assert.match(auth, /\$\("login-tab"\)\.setAttribute\("aria-selected",String\(!s\)\)/);
+  assert.match(auth, /\$\("signup-tab"\)\.setAttribute\("aria-selected",String\(s\)\)/);
+});
+
+
+test('pending authentication disables all competing auth actions and restores the mode label', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /submit\.disabled=v;google\.disabled=v;forgot\.disabled=v/);
+  assert.match(auth, /submitLabel\.textContent=v\?"Please wait…":label/);
+});
+
+
+test('password reset asks for an email before calling the provider', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /if\(!email\.value\.trim\(\)\)\{email\.focus\(\);return msg\("Enter your email address first\."\);\}/);
+});
+
+
+test('signup blocks mismatched passwords with an announced native validation error', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /confirm\.setCustomValidity\("Passwords do not match\."\)/);
+  assert.match(auth, /confirm\.reportValidity\(\)/);
+  assert.match(auth, /confirm\.setCustomValidity\(""\)/);
+});
+
+
+test('email whitespace is removed before sign-in and signup requests', () => {
+  const auth = read('./auth.js');
+  assert.equal((auth.match(/email\.value\.trim\(\)/g) || []).length >= 3, true);
+  assert.match(auth, /signInWithPassword\(\{email:email\.value\.trim\(\),password:password\.value\}\)/);
+  assert.match(auth, /signUp\(\{email:email\.value\.trim\(\),password:password\.value/);
+});
+
+
+test('unconfigured preview prevents provider calls and explains setup state', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /if\(!client\)return msg\("Authentication isn't configured yet\./);
+  assert.match(auth, /if\(configured\(\)&&window\.supabase\?\.createClient\)/);
+});
+
+
+test('form submission runs native validity checks before authentication', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /form\.onsubmit=async e=>\{e\.preventDefault\(\);msg\(""\);if\(!form\.reportValidity\(\)\)return/);
+});
+
+
+test('password reset response does not reveal whether an account exists', () => {
+  const auth = read('./auth.js');
+  assert.match(auth, /If an account exists for this address, a password-reset email will arrive shortly\./);
+});
+
+
+test('password visibility controls are non-submit buttons inside the form', () => {
+  const html = read('./index.html');
+  assert.match(html, /id="toggle" type="button"/);
+  assert.match(html, /id="toggle-confirm" type="button"/);
+  assert.match(html, /id="submit" class="submit" type="submit"/);
+});
+
+
+test('email and password controls remain programmatically labelled', () => {
+  const html = read('./index.html');
+  assert.match(html, /<label for="email">Email address<\/label>/);
+  assert.match(html, /<label for="password">Password<\/label>/);
+  assert.match(html, /<label for="confirm">Confirm password<\/label>/);
+  assert.match(html, /id="status" role="status" aria-live="polite" aria-atomic="true"/);
+});
+
+
+test('reduced-motion preference disables animated reveal and decorative cursor effects', () => {
+  const styles = read('./styles.css');
+  assert.ok(styles.includes('@media (prefers-reduced-motion: reduce)'));
+  assert.ok(styles.includes('.cursor-glow { display:none; }'));
+  assert.ok(styles.includes('.motion-reveal { opacity:1; transform:none; transition:none; }'));
+});
+
+
+test('signup mode requires confirmation and hides the confirmation field in login mode', () => {
+  const auth = read('./auth.js');
+  assert.ok(auth.includes('confirm.required=s;'));
+  assert.ok(auth.includes('$("confirm-wrap").hidden=!s;'));
+});
+
+
+test('Google OAuth redirect uses configured app URL with a same-origin fallback', () => {
+  const auth = read('./auth.js');
+  assert.ok(auth.includes('redirectTo:c.appUrl||location.origin'));
+});
+
+
+test('successful sign-in routes to the configured app destination', () => {
+  const auth = read('./auth.js');
+  assert.ok(auth.includes('location.assign(c.appUrl||"/")'));
+  assert.ok(auth.includes('signInWithPassword'));
+});
+
+
+test('password reset prevents duplicate requests while a request is pending', () => {
+  const auth = read('./auth.js');
+  assert.ok(auth.includes('forgot.disabled=true;'));
+  assert.ok(auth.includes('finally{forgot.disabled=false}'));
+});
+
+
+test('pointer-driven motion is gated by reduced-motion and fine-pointer preferences', () => {
+  const motion = read('./motion.js');
+  assert.ok(motion.includes('prefers-reduced-motion: reduce'));
+  assert.ok(motion.includes('(hover: hover) and (pointer: fine)'));
+});
+
+
+test('scroll reveal falls back to visible content without IntersectionObserver', () => {
+  const motion = read('./motion.js');
+  assert.ok(motion.includes('if ("IntersectionObserver" in window)'));
+  assert.ok(motion.includes('revealItems.forEach(el => el.classList.add("is-visible"))'));
+});
+
+
+test('scroll progress updates are coalesced through requestAnimationFrame', () => {
+  const motion = read('./motion.js');
+  assert.ok(motion.includes('if (!scrollRaf) scrollRaf = requestAnimationFrame(updateScroll)'));
+  assert.ok(motion.includes('scrollRaf = 0;'));
+});
+
+
+test('interactive controls retain visible keyboard focus and narrow-screen layout rules', () => {
+  const styles = read('./styles.css');
+  assert.ok(styles.includes('a:focus-visible,\nbutton:focus-visible,\ninput:focus-visible'));
+  assert.ok(styles.includes('@media(max-width:370px)'));
+  assert.ok(styles.includes('@media(max-width:620px)'));
 });

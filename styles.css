@@ -220,3 +220,32 @@ input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f61c; }
 .world-globe-grid { position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(0deg,transparent 0 9.7%,#a8d8ff18 10% 10.15%,transparent 10.4% 19.5%),repeating-linear-gradient(90deg,transparent 0 9.7%,#a8d8ff17 10% 10.15%,transparent 10.4% 19.5%);mask-image:radial-gradient(circle,#000 57%,transparent 72%); }
 .world-globe-shine { background:linear-gradient(112deg,transparent 15%,#a7d7ff1c 35%,transparent 57%),linear-gradient(90deg,transparent 45%,#01030ab0 100%); }
 @media(max-width:920px){.world-globe-land{opacity:.7}.world-globe-grid{opacity:.45}}
+
+
+/* Keep keyboard focus visible across interactive controls. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 3px;
+}
+
+
+/* Reveal the skip link only when keyboard users focus it. */
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 12px;
+  left: 12px;
+  padding: 10px 14px;
+  transform: translateY(-160%);
+  border: 1px solid var(--gold-bright);
+  border-radius: 3px;
+  background: var(--panel);
+  color: var(--fg);
+  font-size: 12px;
+  text-decoration: none;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
