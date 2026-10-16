@@ -189,3 +189,9 @@ test('signup mode requires confirmation and login mode clears that requirement',
   assert.ok(auth.includes('confirm-wrap').toString() || auth.includes('confirm.required=s;'));
   assert.ok(auth.includes('confirm-wrap').toString());
 });
+
+
+test('Google OAuth redirect uses configured app URL with a same-origin fallback', () => {
+  const auth = read('./auth.js');
+  assert.ok(auth.includes('redirectTo:c.appUrl||location.origin'));
+});
