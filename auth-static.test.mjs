@@ -195,3 +195,10 @@ test('Google OAuth redirect uses configured app URL with a same-origin fallback'
   const auth = read('./auth.js');
   assert.ok(auth.includes('redirectTo:c.appUrl||location.origin'));
 });
+
+
+test('successful sign-in routes to the configured app destination', () => {
+  const auth = read('./auth.js');
+  assert.ok(auth.includes('location.assign(c.appUrl||"/")'));
+  assert.ok(auth.includes('signInWithPassword'));
+});
